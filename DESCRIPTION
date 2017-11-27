@@ -1,6 +1,6 @@
 Package: pillar
 Title: Coloured Formatting for Columns
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Kirill", "Müller", , "krlmlr+r@mailbox.org", role = c("aut", "cre")),
     person("Hadley", "Wickham", role = "aut"),
@@ -23,10 +23,10 @@ Collate: 'compat-purrr.R' 'dim.R' 'extent.R' 'multi.R' 'ornament.R'
         'tick.R' 'title.R' 'type-sum.R' 'type.R' 'utils.R' 'width.R'
         'zzz.R'
 NeedsCompilation: no
-Packaged: 2017-11-20 04:52:16 UTC; muelleki
+Packaged: 2017-11-27 10:31:09 UTC; muelleki
 Author: Kirill Müller [aut, cre],
   Hadley Wickham [aut],
   RStudio [cph]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2017-11-20 12:31:08 UTC
+Date/Publication: 2017-11-27 10:34:24 UTC
