@@ -1,5 +1,7 @@
 context("format_multi")
 
+withr::with_options(list(pillar.bold = TRUE), {
+
 test_that("output test", {
   x <- list(column_zero_one = 1:3 + 0.23, col_02 = letters[1:3], col_03 = factor(letters[1:3]), col_04 = ordered(letters[1:3]))
   expect_pillar_output(xf = colonnade(x, width = 4), filename = "multi-04.txt")
@@ -52,6 +54,26 @@ test_that("output test", {
   expect_pillar_output(
     xf = new_vertical(extra_cols(squeeze(colonnade(x), width = 10))),
     filename = "multi-extra-10.txt"
+  )
+
+  expect_pillar_output(
+    xf = new_vertical(extra_cols(squeeze(colonnade(x), width = 20))),
+    filename = "multi-extra-20.txt"
+  )
+
+  expect_pillar_output(
+    xf = new_vertical(extra_cols(squeeze(colonnade(x), width = 30))),
+    filename = "multi-extra-30.txt"
+  )
+
+  expect_pillar_output(
+    xf = new_vertical(extra_cols(squeeze(colonnade(x), width = 35))),
+    filename = "multi-extra-35.txt"
+  )
+
+  expect_pillar_output(
+    xf = new_vertical(extra_cols(squeeze(colonnade(x), width = 40))),
+    filename = "multi-extra-40.txt"
   )
 })
 
@@ -144,3 +166,55 @@ test_that("empty", {
     structure(character(), class = "pillar_vertical")
   )
 })
+
+test_that("NA names", {
+  x <- list(`NA` = 1:3, set_to_NA = 4:6)
+  names(x)[[2]] <- NA_character_
+  expect_pillar_output(
+    crayon = FALSE,
+    xf = colonnade(x, width = 30),
+    filename = "na-names.txt"
+  )
+})
+
+test_that("without styling", {
+  xf <- colonnade(list(x = (10 ^ (-3:4)) * c(-1, 1)))
+
+  withr::with_options(
+    list(),
+    expect_pillar_output(
+      xf = xf,
+      filename = "style-regular.txt"
+    )
+  )
+  withr::with_options(
+    list(pillar.subtle = FALSE),
+    expect_pillar_output(
+      xf = xf,
+      filename = "style-subtle-false.txt"
+    )
+  )
+  withr::with_options(
+    list(pillar.neg = FALSE),
+    expect_pillar_output(
+      xf = xf,
+      filename = "style-neg-false.txt"
+    )
+  )
+  withr::with_options(
+    list(pillar.subtle = FALSE, pillar.neg = FALSE),
+    expect_pillar_output(
+      xf = xf,
+      filename = "style-subtle-neg-false.txt"
+    )
+  )
+  withr::with_options(
+    list(pillar.bold = FALSE),
+    expect_pillar_output(
+      xf = xf,
+      filename = "style-bold-false.txt"
+    )
+  )
+})
+
+}) # withr::with_options(list(pillar.bold = TRUE),
