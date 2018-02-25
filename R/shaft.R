@@ -74,10 +74,10 @@ format.pillar_shaft <- function(x, width, ...) {
 #' @rdname pillar_shaft
 pillar_shaft.logical <- function(x, ...) {
   out <- rep(NA, length(x))
-  out[x] <- "T"
-  out[!x] <- "F"
+  out[x] <- "TRUE"
+  out[!x] <- "FALSE"
 
-  new_pillar_shaft_simple(out, width = 1, align = "left")
+  new_pillar_shaft_simple(out, width = 5, align = "left")
 }
 
 #' @export
@@ -86,14 +86,25 @@ pillar_shaft.logical <- function(x, ...) {
 #'   larger than 1 will potentially show more significant figures than this
 #'   but they will be greyed out.
 pillar_shaft.numeric <- function(x, ..., sigfig = getOption("pillar.sigfig", 3)) {
+  if (!is.null(attr(x, "class"))) {
+    ret <- format(x)
+    return(new_pillar_shaft_simple(ret, width = get_extent(ret), align = "left"))
+  }
+
   dec <- format_decimal(x, ..., sigfig = sigfig)
   sci <- format_scientific(x, ..., sigfig = sigfig)
 
   ret <- list(dec = dec, sci = sci)
 
+  MAX_DEC_WIDTH <- 13
+  dec_width <- get_width(ret$dec)
+  if (dec_width > MAX_DEC_WIDTH) {
+    dec_width <- get_width(ret$sci)
+  }
+
   new_pillar_shaft(
     ret,
-    width = get_width(ret$dec),
+    width = dec_width,
     min_width = min(get_min_widths(ret)),
     subclass = "pillar_shaft_decimal"
   )

@@ -27,6 +27,22 @@ style_subtle <- keep_empty(function(x) {
   }
 })
 
+#' @rdname style_subtle
+#' @details
+#' `style_subtle_num()` is affected by the `pillar.subtle_num` option, which is
+#' `FALSE` by default.
+#'
+#' @export
+#' @examples
+#' style_subtle_num(0.01)
+style_subtle_num <- function(x) {
+  if (isTRUE(getOption("pillar.subtle_num", FALSE))) {
+    style_subtle(x)
+  } else {
+    x
+  }
+}
+
 style_hint <- keep_empty(function(x) {
   if (isTRUE(getOption("pillar.subtle", TRUE))) {
     style_grey(0.8, x)
