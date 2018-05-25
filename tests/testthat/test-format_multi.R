@@ -41,7 +41,6 @@ withr::with_options(list(pillar.bold = TRUE), {
     expect_pillar_output(xf = colonnade(x, width = 39), filename = "multi-39.txt")
     expect_pillar_output(xf = colonnade(x, width = Inf), filename = "multi-inf.txt")
 
-    skip_on_os("windows")
     expect_pillar_output(
       xf = colonnade(
         rep(list(paste(letters, collapse = " ")), 4),
@@ -173,6 +172,15 @@ withr::with_options(list(pillar.bold = TRUE), {
       crayon = FALSE,
       xf = colonnade(x, width = 30),
       filename = "na-names.txt"
+    )
+  })
+
+  test_that("sep argument", {
+    x <- list(sep = 1:3)
+    expect_pillar_output(
+      crayon = FALSE,
+      xf = colonnade(x, width = 30),
+      filename = "sep.txt"
     )
   })
 

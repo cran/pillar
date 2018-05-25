@@ -1,11 +1,11 @@
-ec5ab1bf96ea920337576b1845e08208 *DESCRIPTION
+a68793e212451a67d66b7bd951c4ccd6 *DESCRIPTION
 14644175dcb84638228335ed8f48be1b *NAMESPACE
-c6a958d40493ea7fcbd8c78c33587a21 *NEWS.md
+acb2e5dce492a666eabe4a5b487fd81e *NEWS.md
 90afb565c607389127bb70850acdf543 *R/capital.R
 feaa904f11d6970ddbc1057a30cf6610 *R/compat-purrr.R
 9a24254f242aa1bcc7f4892733813ba9 *R/dim.R
 a7f95a6b81ee5731ec0d6e8ab02e096a *R/extent.R
-39a3a651f9662bc7fde8f8af52fa3852 *R/multi.R
+406b1a295ecc6e0585220b46ffecb573 *R/multi.R
 52cb3043e070094feb74e8c9ad9c6a14 *R/ornament.R
 c819a6e105d3ba0b624f46624cf079e9 *R/pillar-package.R
 a7055449ed58ca3d81294ae9385339fd *R/pillar.R
@@ -15,7 +15,7 @@ c48c5d7379c228d9be401a88a129ea8c *R/rowid-data.R
 e167a1471b55a21b395007d7eade57fd *R/rowid-type.R
 e2f9dc1b1f2fb860e99a70ad919f719e *R/scientific.R
 0cab008ac471b15f33029c3ed2d4fe25 *R/shaft-simple.R
-ca724678c5bdec37718862201cb793dd *R/shaft.R
+b07ac03cbb403055b6f0dd16aa68eacc *R/shaft.R
 021ebca815e3d9acd2de98b36ad63f90 *R/sigfig.R
 8673fc304489c77f486011658314da3a *R/spark-bar.R
 3a493bf3a8715531e62af602917267a6 *R/spark-line.R
@@ -43,7 +43,7 @@ b97f9997c1566410da5082fcb8c46ff8 *man/new_pillar_shaft.Rd
 68ff67eb32acf5ccfebf03c84dcd735a *man/new_pillar_type.Rd
 8c9934e06e9cd26f94da73b88149a7ea *man/pillar-package.Rd
 5b0aab58dd3b3a7cf1009e02b6854e6c *man/pillar.Rd
-b1bf9b76356461aaaae510797e7967d7 *man/pillar_shaft.Rd
+cc9be43fcba37ed9b05d9b5a7234d88c *man/pillar_shaft.Rd
 15b96e812933c446b396a9f1b3fea2cc *man/style_subtle.Rd
 dd7b300dbb77de57b597f8ba9394d1c2 *man/type_sum.Rd
 6cf7422e8e8f92b1e263b72654521716 *tests/testthat.R
@@ -129,6 +129,7 @@ f8c8fbdbb204e9268a535cc4c9d53e5e *tests/testthat/bw-out/numeric-22.txt
 99d62911af80e7037b59cfc14bf2d84b *tests/testthat/bw-out/scientific-short-neg.txt
 ca68f8a078bdd4c40fffb81507a93647 *tests/testthat/bw-out/scientific-tiny.txt
 67b6acbe43eda1d7cea8373809ee58f3 *tests/testthat/bw-out/scientific.txt
+a1b2b4a366f6f0f352b2e63c6ffb1fa1 *tests/testthat/bw-out/sep.txt
 85bb872e2f2e1291553e83b63c5db92e *tests/testthat/bw-out/spaces.txt
 f3dfbce67c769debd7a96d7807c5dbc4 *tests/testthat/bw-out/style-bold-false.txt
 f3dfbce67c769debd7a96d7807c5dbc4 *tests/testthat/bw-out/style-neg-false.txt
@@ -178,6 +179,7 @@ f364a4749cf4f3f71d8316938c5914ff *tests/testthat/out-native/integer-06.txt
 f364a4749cf4f3f71d8316938c5914ff *tests/testthat/out-native/integer-07.txt
 d31c0302915e9001a9cbc9b6291a67ac *tests/testthat/out-native/integer-08.txt
 0e38ca1353c320ca25103ad95415d062 *tests/testthat/out-native/integer-09.txt
+def1bf326e459443d7c5296e43a8eb29 *tests/testthat/out-native/letters-inf.txt
 3a761b689bef4dd6d5af48df009c163e *tests/testthat/out-native/letters-long-03.txt
 12bf4ff59d33cff116c119c31372ada6 *tests/testthat/out-native/letters-long-10.txt
 2bb06977b4efe5459aa6f5fc47eeaeae *tests/testthat/out-native/letters-long.txt
@@ -224,6 +226,11 @@ de51fbf2ef16deca4ec30d5eeaf503db *tests/testthat/out-native/multi-36.txt
 de51fbf2ef16deca4ec30d5eeaf503db *tests/testthat/out-native/multi-37.txt
 de51fbf2ef16deca4ec30d5eeaf503db *tests/testthat/out-native/multi-38.txt
 87224b1355bd70a16f0326258f55fcce *tests/testthat/out-native/multi-39.txt
+46a5eabdbdec20d9b604b2abb9e5d1cf *tests/testthat/out-native/multi-extra-10.txt
+d7ba97e10d9fb74434f21cf2254f62cc *tests/testthat/out-native/multi-extra-20.txt
+c4cd1ae7e6be1693d1c9ed66fe08029a *tests/testthat/out-native/multi-extra-30.txt
+37125b4b21fe523be4c0bf8ec74ca873 *tests/testthat/out-native/multi-extra-35.txt
+d41d8cd98f00b204e9800998ecf8427e *tests/testthat/out-native/multi-extra-40.txt
 87224b1355bd70a16f0326258f55fcce *tests/testthat/out-native/multi-inf.txt
 619a84663c79657c4c34ac9e3aaddf8f *tests/testthat/out-native/na-names.txt
 a26d79b84b5c66b07d5abb63f81b9ad2 *tests/testthat/out-native/numeric-04.txt
@@ -237,6 +244,7 @@ ee3239dbdfd400bba2439bc3b31588ad *tests/testthat/out-native/rowid-star-title-12.
 f47ed33b71df2dc93e52e2c471147d02 *tests/testthat/out-native/scientific-short-neg.txt
 694a3f298cfee01788d212781a24417b *tests/testthat/out-native/scientific-tiny.txt
 8ca08214ab56854692116256ff686a8c *tests/testthat/out-native/scientific.txt
+0adf68b99aabdd9743c31004efce1b95 *tests/testthat/out-native/sep.txt
 736d186b8958fd234d95f95ab276a945 *tests/testthat/out-native/spaces.txt
 54372b09173daf37c419e0452c232d62 *tests/testthat/out-native/style-bold-false.txt
 54372b09173daf37c419e0452c232d62 *tests/testthat/out-native/style-neg-false.txt
@@ -267,6 +275,7 @@ ba60992a3a4cb1b167ff4b586382c14d *tests/testthat/out-native/title-longer.txt
 79660177c715b9cc89f5a027a00018e9 *tests/testthat/out-native/title-none.txt
 81f0fb8c32b7a5e8c3e5f72a861882a0 *tests/testthat/out-native/title-short.txt
 768ea32be9ce548e4bf0a74e2a187044 *tests/testthat/out-native/title-too-long.txt
+7b25fa128b94f97f734919a9ab2c5a38 *tests/testthat/out-native/utf8.txt
 c0035dcf31be347ce7aa86b4b6f7a628 *tests/testthat/out/asis-list.txt
 facbf1e6a2785197d9097b664d484e09 *tests/testthat/out/asis-number.txt
 a25abd92936195668539dc094c99bb3b *tests/testthat/out/basic-signif-5.txt
@@ -350,6 +359,7 @@ f967f74349c68a7954f8f480ecfcbdb4 *tests/testthat/out/rowid-star-title-12.txt
 aba77908db577785f9f6518c6a4e00d8 *tests/testthat/out/scientific-short-neg.txt
 0be4d84d7a534d6b1a2948f1668f251b *tests/testthat/out/scientific-tiny.txt
 9666a875d46936976d9ceeee3b017b25 *tests/testthat/out/scientific.txt
+9a8c1bac6b51fac78faa08cb343248e1 *tests/testthat/out/sep.txt
 90ef42ea43789bd78ed733b08bf08335 *tests/testthat/out/spaces.txt
 f2922f755319eec57372e0c5b8dc9ea3 *tests/testthat/out/style-bold-false.txt
 667abb029b1bef848f3f690bcc86ba18 *tests/testthat/out/style-neg-false.txt
@@ -383,15 +393,15 @@ a05139eb25fd07a1e53e5f64a51e34f3 *tests/testthat/out/title-longer.txt
 a145bf120f54967b578911fde3a95044 *tests/testthat/out/title-too-long.txt
 b1a44ef53e5f5c14d1787182ebb5064b *tests/testthat/out/utf8.txt
 a08a52cf5be75f903165cab64bcaac11 *tests/testthat/test-format_asis.R
-a1593dfb582864902d14d75e5997a5b5 *tests/testthat/test-format_character.R
+be582a943bbe3dde72a3d04423526b9f *tests/testthat/test-format_character.R
 eac93e01b5f2ced49c453c974d5fcd10 *tests/testthat/test-format_date.R
-852a11d0ee389e197d08aedf8fbc2db3 *tests/testthat/test-format_decimal.R
+274888bb94653ede37da27e5e41fab8e *tests/testthat/test-format_decimal.R
 04c2dc32e2e311777598f5ab035f9fb6 *tests/testthat/test-format_factor.R
 88048ab66bcd2d32de82db002a61d997 *tests/testthat/test-format_integer.R
 fc53a52fc88a4de14c5fca5a7aabaacd *tests/testthat/test-format_list.R
 b6e309522d23f07c77789099608dd657 *tests/testthat/test-format_logical.R
 7fd31f748601db45f36b6be15230a9e4 *tests/testthat/test-format_lubridate.R
-2e3cafb4b515838e1f0d9511a4796307 *tests/testthat/test-format_multi.R
+f293c8741d133d6e6c3bb9957525b63a *tests/testthat/test-format_multi.R
 e30330614021dd779f4e63013f6fb1a8 *tests/testthat/test-format_numeric.R
 d20fa0a60c514e153b38c1568a2f9d94 *tests/testthat/test-format_rowid.R
 19470152da800a50a06a95a2d8583c22 *tests/testthat/test-format_scientific.R
