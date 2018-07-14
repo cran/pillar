@@ -4,7 +4,8 @@
 #' one row for the type, and `length(x)` rows for the data.
 #'
 #' @param x A vector to format
-#' @param title An optional title for the column
+#' @param title An optional title for the column. The title will be
+#'   used "as is", no quoting will be applied.
 #' @param width Default width, optional
 #' @param ... Other arguments passed to methods
 #' @export
@@ -35,22 +36,22 @@
 #' pillar(as.POSIXct(date) + c(30, NA, 600, 3600, 86400))
 pillar <- function(x, title = NULL, width = NULL, ...) {
   capital <- pillar_capital(x, title, ...)
-  data <- pillar_shaft(x, ...)
-  ret <- structure(
-    list(capital = capital, data = data),
-    class = "pillar"
-  )
-  ret <- set_width(ret, width)
-  ret
+  shaft <- pillar_shaft(x, ...)
+  new_pillar(capital, shaft, width)
 }
 
 rowidformat <- function(n, has_title_row = FALSE, has_star = FALSE, ...) {
   capital <- rif_capital(has_title_row, has_star, ...)
-  data <- rif_data(n, ...)
+  shaft <- rif_shaft(n, ...)
+  new_pillar(capital, shaft)
+}
+
+new_pillar <- function(capital, shaft, width = NULL) {
   ret <- structure(
-    list(capital = capital, data = data),
+    list(capital = capital, shaft = shaft),
     class = "pillar"
   )
+  ret <- set_width(ret, width)
   ret
 }
 
@@ -59,7 +60,7 @@ format.pillar <- function(x, width = NULL, ...) {
   width <- pillar_get_width(x, width)
   out <- pillar_format_parts(x, width)
 
-  fmt <- c(out$capital_format, out$data_format)
+  fmt <- c(out$capital_format, out$shaft_format)
   new_vertical(fmt)
 }
 
@@ -86,15 +87,15 @@ pillar_get_width <- function(x, width) {
 
 pillar_format_parts <- function(x, width, ...) {
   capital_format <- format(x$capital, width = width, ...)
-  data_format <- format(x$data, width = width, ...)
-  align <- attr(data_format, "align")
+  shaft_format <- format(x$shaft, width = width, ...)
+  align <- attr(shaft_format, "align")
 
   capital_format <- align(capital_format, width = width, align = align)
-  data_format <- align(data_format, width = width, align = align)
+  shaft_format <- align(shaft_format, width = width, align = align)
 
   list(
     capital_format = capital_format,
-    data_format = data_format
+    shaft_format = shaft_format
   )
 }
 

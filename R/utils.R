@@ -8,7 +8,7 @@ str_trunc <- function(x, width) {
   str_width <- utf8::utf8_width(crayon::strip_style(x), encode = FALSE)
 
   too_wide <- which(!is.na(x) & str_width > width)
-  x[too_wide] <- paste0(crayon::col_substr(x[too_wide], 1, width - 1), get_ellipsis())
+  x[too_wide] <- paste0(fansi::substr_ctl(x[too_wide], 1, width - 1), get_ellipsis())
 
   x
 }
@@ -25,6 +25,11 @@ check_sigfig <- function(x) {
 
 slice <- function(df, index) {
   df[index, , drop = FALSE]
+}
+
+bind_rows <- function(x) {
+  if (length(x) == 0) return(data.frame())
+  eval_tidy(quo(rbind(!!!x)))
 }
 
 get_ellipsis <- function() {

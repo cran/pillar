@@ -1,7 +1,9 @@
 MIN_PILLAR_WIDTH <- 5L
 
 style_type <- function(x) {
-  crayon::italic(style_subtle(x))
+  force(x)
+  x <- style_subtle(x)
+  crayon::italic(x)
 }
 
 #' Prepare a column type for formatting
@@ -22,7 +24,7 @@ new_pillar_type <- function(x, ...) {
     ),
     class = "pillar_type"
   )
-  extent <- get_extent(format_type_sum(type))
+  extent <- get_extent(format_type_sum(type, NULL))
   ret <- set_width(ret, width = max(extent, MIN_PILLAR_WIDTH))
   ret <- set_min_width(ret, MIN_PILLAR_WIDTH)
   ret
@@ -37,16 +39,16 @@ get_pillar_type <- function(x) {
 
 #' @export
 format.pillar_type <- function(x, width = NULL, ...) {
-  type <- x$type
-  if (!is.null(width) && width <= get_width(x)) {
-    type[] <- crayon::col_substr(type, 1, width - 2)
+  ret <- format_type_sum(x$type, width)
+  if (!is.null(width) && get_extent(ret) > width) {
+    ret <- fansi::substr_ctl(ret, 1, width)
   }
-  format_type_sum(type)
+  ret
 }
 
 format_full_pillar_type <- function(x) {
   type <- get_pillar_type(x)
-  format_type_sum(type)
+  format_type_sum(type, NULL)
 }
 
 #' Format a type summary
@@ -57,24 +59,33 @@ format_full_pillar_type <- function(x) {
 #' `type_sum()` implementation.  See examples.
 #'
 #' @param x A return value from `type_sum()`
+#' @param width The desired total width. If the returned string still is
+#'   wider, it will be trimmed. Can be `NULL`.
+#' @param ... Unused, for extensibility.
 #'
 #' @export
 #' @examples
-#' format_type_sum(1)
+#' format_type_sum(1, NULL)
 #' pillar(1)
 #'
 #' type_sum.accel <- function(x) {
-#'   structure("kg m/s^2", class = "type_sum_accel")
+#'   structure("kg m/s^2", width = 8, class = "type_sum_accel")
 #' }
-#' format_type_sum.type_sum_accel <- function(x) {
+#' format_type_sum.type_sum_accel <- function(x, width, ...) {
+#'   if (!is.null(width) && width < attr(x, "width")) {
+#'     x <- substr(x, 1, width)
+#'   }
 #'   style_subtle(x)
 #' }
 #' accel <- structure(9.81, class = "accel")
 #' pillar(accel)
-format_type_sum <- function(x) UseMethod("format_type_sum")
+format_type_sum <- function(x, width, ...) UseMethod("format_type_sum")
 
 #' @export
 #' @rdname format_type_sum
-format_type_sum.default <- function(x) {
+format_type_sum.default <- function(x, width, ...) {
+  if (!is.null(width) && width - 2 < nchar(x, type = "width")) {
+    x <- substr(x, 1, max(width - 2, 0))
+  }
   style_type(paste0("<", x, ">"))
 }
