@@ -15,10 +15,9 @@ is_syntactic <- function(x) {
 }
 
 is_ambiguous_string <- function(x) {
-  grepl("^$|^ | $|\\\\|\"", x)
+  !is.na(x) & grepl("^$|^ | $|\\\\|\"", x)
 }
 
 tick <- function(x) {
-  x[is.na(x)] <- "NA"
-  encodeString(x, quote = "`")
+  ifelse(is.na(x), "NA", encodeString(x, quote = "`"))
 }
