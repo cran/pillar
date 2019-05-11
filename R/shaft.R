@@ -1,26 +1,47 @@
 #' Constructor for column data
 #'
+#' @description
+#' \Sexpr[results=rd, stage=render]{pillar:::lifecycle("stable")}
+#'
 #' The `new_pillar_shaft()` constructor creates objects of the `"pillar_shaft"`
 #' class.
-#' This is a virtual or abstract class, you must specify the `subclass`
+#' This is a virtual or abstract class, you must specify the `class`
 #' argument.
 #' By convention, this should be a string that starts with `"pillar_shaft_"`.
 #' See `vignette("extending", package = "tibble")` for usage examples.
+#'
+#' This method accepts a vector of arbitrary length and is expected to return an S3 object with the following properties:
+#'
+#' - It has an attribute `"width"`
+#' - It can have an attribute `"min_width"`, if missing, `"width"` is used
+#' - It must implement a method `format(x, width, ...)` that can be called with any value between `min_width` and `width`
+#' - This method must return an object that inherits from `character` and has attributes `"align"` (with supported values `"left"`, `"right"`, and `"center"`) and `"width"`
+#'
+#' The function [new_pillar_shaft()] returns such an object, and also correctly formats `NA` values.
+#' In many cases, the implementation of `pillar_shaft.your_class_name()` will format the data as a character vector (using color for emphasis) and simply call `new_pillar_shaft()`.
+#' See `pillar:::pillar_shaft.numeric` for a code that allows changing the display depending on the available width.
 #'
 #' @param x An object
 #' @param ... Additional attributes
 #' @param width The maximum column width.
 #' @param min_width The minimum allowed column width, `width` if omitted.
-#' @param subclass The name of the subclass.
+#' @param class The name of the subclass.
+#' @param subclass Deprecated, pass the `class` argument instead.
 #' @export
-new_pillar_shaft <- function(x, ..., width, min_width = width, subclass) {
-  stopifnot(is.character(subclass))
-  stopifnot(length(subclass) > 0)
+new_pillar_shaft <- function(x, ..., width = NULL, min_width = width, class = NULL, subclass = NULL) {
+  if (!is.null(subclass)) {
+    signal_soft_deprecated("The `subclass` argument to `new_pillar_shaft()` is deprecated, please use the `class` argument.")
+    class <- subclass
+  }
+
+  stopifnot(is.character(class))
+  stopifnot(length(class) > 0)
+  stopifnot(is_bare_numeric(width, 1))
 
   ret <- structure(
     x,
     ...,
-    class = c(subclass, "pillar_shaft")
+    class = c(class, "pillar_shaft")
   )
   ret <- set_width(ret, width)
   ret <- set_min_width(ret, min_width)
@@ -28,6 +49,9 @@ new_pillar_shaft <- function(x, ..., width, min_width = width, subclass) {
 }
 
 #' Column data
+#'
+#' @description
+#' \Sexpr[results=rd, stage=render]{pillar:::lifecycle("stable")}
 #'
 #' Internal class for formatting the data for a column.
 #' `pillar_shaft()` is a coercion method that must be implemented
@@ -43,6 +67,11 @@ new_pillar_shaft <- function(x, ..., width, min_width = width, subclass) {
 #' pillar_shaft(c(1:3, NA))
 pillar_shaft <- function(x, ...) {
   UseMethod("pillar_shaft")
+}
+
+#' @export
+pillar_shaft.pillar_empty_col <- function(x, ...) {
+  new_empty_shaft()
 }
 
 #' @param width Width for printing and formatting.
@@ -106,7 +135,7 @@ pillar_shaft.numeric <- function(x, ..., sigfig = getOption("pillar.sigfig", 3))
     ret,
     width = dec_width,
     min_width = min(get_min_widths(ret)),
-    subclass = "pillar_shaft_decimal"
+    class = "pillar_shaft_decimal"
   )
 }
 

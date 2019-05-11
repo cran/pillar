@@ -1,12 +1,5 @@
 context("format_decimal")
 
-without_color <- function(code) {
-  old <- options(crayon.enabled = FALSE)
-  on.exit(options(old))
-
-  code
-}
-
 format_decimal_bw <- function(x, sigfig = 3, ...) {
   without_color(format_decimal(x, sigfig = sigfig, ...))
 }
@@ -40,7 +33,7 @@ test_that("special values appear in LHS", {
   x <- c(NA, NaN, Inf)
   f <- format_decimal_bw(x)
 
-  expect_equal(without_color(format_lhs(f)), format(x))
+  expect_equal(without_color(format_lhs(f)), format(x, trim = TRUE))
 })
 
 test_that("all-positive values get nothing in neg", {
@@ -50,7 +43,7 @@ test_that("all-positive values get nothing in neg", {
 
 test_that("negative values get - in neg", {
   f <- format_decimal_bw(c(-Inf, Inf))
-  expect_equal(format_neg(f), c("-", " "))
+  expect_equal(format_neg(f), c("-", ""))
 })
 
 test_that("trailing zeros removed if whole decimal fraction", {
@@ -69,7 +62,7 @@ test_that("sigfigs split between lhs and rhs", {
   x <- c(1.43, 10.43, 100.43)
   f <- format_decimal_bw(x)
 
-  expect_equal(format_lhs(f), format(trunc(x)))
+  expect_equal(format_lhs(f), as.character(trunc(x)))
   expect_equal(format_rhs(f), c("43", "4 ", "  "))
 })
 
@@ -109,4 +102,29 @@ test_that("output test", {
     expect_pillar_output((10^(0:-5)) * c(-1, 1), width = 20, filename = "basic-signif-7.txt")
   )
   expect_pillar_output((10^(5:-5)) + 1e-7, width = 20, filename = "basic-slightly-nonint.txt")
+})
+
+expect_decimal_width <- function(x) {
+  get_formatted_width <- function(x) {
+    get_max_extent(assemble_decimal(x))
+  }
+
+  expect_equal(
+    get_formatted_width(format_decimal(!!x, 3)),
+    !!get_width(format_decimal(x, 3))
+  )
+}
+
+test_that("width computation", {
+  expect_decimal_width(c(1, 10, 100))
+  expect_decimal_width(c(0, NA))
+  expect_decimal_width(c(1, NaN))
+  expect_decimal_width(c(-12, 3))
+  expect_decimal_width(c(-1, 23))
+  expect_decimal_width(c(1.01, 10.1))
+  expect_decimal_width(c(1.01, -10.1))
+  expect_decimal_width(c(NA_integer_, NA_integer_))
+  expect_decimal_width(c(1.234, 1.2345))
+  expect_decimal_width(c(1.2, -Inf))
+  expect_decimal_width(c(1, Inf))
 })

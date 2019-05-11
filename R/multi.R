@@ -1,9 +1,14 @@
 #' Format multiple vectors in a tabular display
 #'
+#' @description
 #' The vectors are formatted to fit horizontally into a user-supplied number of
 #' characters per row.
 #'
-#' @param x A list of vectors to format. Can contain matrices or data frames.
+#' The `colonnade()` function doesn't process the input but returns an object
+#' with a [format()] and a [print()] method.
+#' The implementations call `squeeze()` to create [pillar] objects and fit them to a given width.
+#'
+#' @param x A list, which can contain matrices or data frames.
 #'   If named, the names will be used as title for the pillars. Non-syntactic names
 #'   will be escaped.
 #' @param has_row_id Include a column indicating row IDs? Pass `"*"` to mark
@@ -24,9 +29,11 @@
 #' # If width is larger than getOption("width"), multiple tiers are created:
 #' colonnade(rep(long_string, 4), width = Inf)
 colonnade <- function(x, has_row_id = TRUE, width = NULL, ...) {
+  has_color(forget = TRUE)
+
   x <- flatten_colonnade(x)
   proxy <- structure(x, has_row_id = has_row_id)
-  ret <- structure(proxy, class = "colonnade")
+  ret <- structure(proxy, class = "pillar_colonnade")
   ret <- set_width(ret, width)
   ret
 }
@@ -59,8 +66,7 @@ flatten_column <- function(x, name) {
 
 flatten_df_column <- function(x, name) {
   if (length(x) == 0) {
-    # FIXME: Better display for 0-col data frames
-    set_names(list(rep(NA, nrow(x))), name)
+    set_names(list(new_empty_col_sentinel(x)), name)
   } else {
     x <- flatten_colonnade(unclass(x))
     names(x) <- paste0("$", names(x))
@@ -71,9 +77,7 @@ flatten_df_column <- function(x, name) {
 
 flatten_matrix_column <- function(x, name) {
   if (ncol(x) == 0) {
-    # FIXME: Better display for 0-col matrices
-    x <- cbind(x, NA)
-    set_names(list(x[,1]), name)
+    set_names(list(new_empty_col_sentinel(x)), name)
   } else {
     x_list <- map(seq_len(ncol(x)), function(i) x[,i])
 
@@ -89,11 +93,15 @@ flatten_matrix_column <- function(x, name) {
   }
 }
 
+new_empty_col_sentinel <- function(type) {
+  structure(list(type), class = c("pillar_empty_col"))
+}
+
 #' @description
-#' The `squeeze()` function is called by [format()]  and [print()] and usually
-#' doesn't need to be called manually.
+#' The `squeeze()` function usually doesn't need to be called manually.
 #' It returns an object suitable for printing and formatting at a fixed width
-#' with additional information about omitted columns.
+#' with additional information about omitted columns, which can be retrieved
+#' via [extra_cols()].
 #'
 #' @rdname colonnade
 #' @export
@@ -178,12 +186,12 @@ new_colonnade_sqeezed <- function(x, colonnade, extra_cols) {
   structure(
     x,
     extra_cols = colonnade[extra_cols],
-    class = "squeezed_colonnade"
+    class = "pillar_squeezed_colonnade"
   )
 }
 
 #' @export
-format.squeezed_colonnade <- function(x, ...) {
+format.pillar_squeezed_colonnade <- function(x, ...) {
   formatted <- map(x, format_colonnade_tier)
   new_vertical(as.character(unlist(formatted)))
 }
@@ -201,13 +209,13 @@ format_colonnade_tier <- function(x) {
 }
 
 #' @export
-print.squeezed_colonnade <- function(x, ...) {
+print.pillar_squeezed_colonnade <- function(x, ...) {
   print(format(x, ...), ...)
   invisible(x)
 }
 
 # Method registration happens in .onLoad()
-knit_print.squeezed_colonnade <- function(x, ...) {
+knit_print.pillar_squeezed_colonnade <- function(x, ...) {
   unlist(map(x, knit_print_squeezed_colonnade_tier))
 }
 
@@ -238,7 +246,7 @@ extra_cols <- function(x, ...) {
 #'   always contain as many elements as there are extra columns, but elements
 #'   beyond `n` will be `NA`.
 #' @export
-extra_cols.squeezed_colonnade <- function(x, ..., n = Inf) {
+extra_cols.pillar_squeezed_colonnade <- function(x, ..., n = Inf) {
   extra_cols <- attr(x, "extra_cols")
   ret <- rep(NA_character_, length(extra_cols))
 
@@ -248,12 +256,12 @@ extra_cols.squeezed_colonnade <- function(x, ..., n = Inf) {
 }
 
 #' @export
-format.colonnade <- function(x, ...) {
+format.pillar_colonnade <- function(x, ...) {
   format(squeeze(x, ...))
 }
 
 #' @export
-print.colonnade <- function(x, ...) {
+print.pillar_colonnade <- function(x, ...) {
   print(format(x, ...))
 }
 

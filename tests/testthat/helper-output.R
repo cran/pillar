@@ -21,7 +21,12 @@ df_str <- map(rlang::set_names(1:50), function(i) substr(long_str, 1, i))
 
 expect_pillar_output <- function(x = NULL, ..., filename, xp = NULL, xf = NULL,
                                  crayon = TRUE, output_width = 80L) {
-  object_quo <- rlang::quo(get_pillar_output_object(x, ..., xp = xp, xf = xf))
+  x <- rlang::enquo(x)
+  dots <- rlang::enquos(...)
+  xp <- rlang::enquo(xp)
+  xf <- rlang::enquo(xf)
+  object_quo <- rlang::quo(get_pillar_output_object(!!x, !!!dots, xp = !!xp, xf = !!xf))
+
   expect_pillar_output_utf8(object_quo, filename, output_width)
   expect_pillar_output_latin1(object_quo, filename, output_width)
 }
@@ -45,7 +50,7 @@ expect_pillar_output_utf8 <- function(object_quo, filename, output_width) {
 }
 
 expect_pillar_output_latin1 <- function(object_quo, filename, output_width) {
-  if (!l10n_info()$`UTF-8`) {
+  if (.Platform$OS.type == "windows") {
     expect_known_display(
       object = !!object_quo,
       file = file.path("out-native", filename),
@@ -79,4 +84,12 @@ add_special <- function(x) {
 
 continue <- function(x) {
   paste0(x, cli::symbol$continue)
+}
+
+without_color <- function(code) {
+  old <- options(crayon.enabled = FALSE)
+  has_color(forget = TRUE)
+  on.exit({ options(old); has_color(forget = TRUE) })
+
+  code
 }

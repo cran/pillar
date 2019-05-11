@@ -6,9 +6,26 @@ NULL
 }
 
 .onLoad <- function(libname, pkgname) {
-  register_s3_method("knitr", "knit_print", "squeezed_colonnade")
+  # Can't use vctrs::s3_register() here with vctrs 0.1.0
+  # https://github.com/r-lib/vctrs/pull/314
+  register_s3_method("knitr", "knit_print", "pillar_squeezed_colonnade")
+  register_s3_method("vctrs", "vec_ptype_abbr", "pillar_empty_col")
 
-  assign_style_grey()
+  assign_crayon_styles()
+
+  if (getRversion() < "3.3.0") {
+    strrep <<- strrep_compat
+  } else {
+    rm("strrep", inherits = TRUE)
+  }
+
+  if (utils::packageVersion("vctrs") > "0.1.0") {
+    vec_is <<- get("vec_is", asNamespace("vctrs"))
+  } else {
+    vec_is <<- compat_vec_is
+  }
+
+  compat_lengths()
 
   invisible()
 }

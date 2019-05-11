@@ -5,7 +5,8 @@
 \alias{new_pillar_shaft_simple}
 \title{Constructor for column data}
 \usage{
-new_pillar_shaft(x, ..., width, min_width = width, subclass)
+new_pillar_shaft(x, ..., width = NULL, min_width = width,
+  class = NULL, subclass = NULL)
 
 new_pillar_shaft_simple(formatted, ..., width = NULL, align = "left",
   min_width = NULL, na_indent = 0L)
@@ -19,7 +20,9 @@ new_pillar_shaft_simple(formatted, ..., width = NULL, align = "left",
 
 \item{min_width}{The minimum allowed column width, \code{width} if omitted.}
 
-\item{subclass}{The name of the subclass.}
+\item{class}{The name of the subclass.}
+
+\item{subclass}{Deprecated, pass the \code{class} argument instead.}
 
 \item{formatted}{An object coercible to \link{character}.}
 
@@ -28,12 +31,26 @@ new_pillar_shaft_simple(formatted, ..., width = NULL, align = "left",
 \item{na_indent}{Indention of \code{NA} values.}
 }
 \description{
+\Sexpr[results=rd, stage=render]{pillar:::lifecycle("stable")}
+
 The \code{new_pillar_shaft()} constructor creates objects of the \code{"pillar_shaft"}
 class.
-This is a virtual or abstract class, you must specify the \code{subclass}
+This is a virtual or abstract class, you must specify the \code{class}
 argument.
 By convention, this should be a string that starts with \code{"pillar_shaft_"}.
 See \code{vignette("extending", package = "tibble")} for usage examples.
+
+This method accepts a vector of arbitrary length and is expected to return an S3 object with the following properties:
+\itemize{
+\item It has an attribute \code{"width"}
+\item It can have an attribute \code{"min_width"}, if missing, \code{"width"} is used
+\item It must implement a method \code{format(x, width, ...)} that can be called with any value between \code{min_width} and \code{width}
+\item This method must return an object that inherits from \code{character} and has attributes \code{"align"} (with supported values \code{"left"}, \code{"right"}, and \code{"center"}) and \code{"width"}
+}
+
+The function \code{\link[=new_pillar_shaft]{new_pillar_shaft()}} returns such an object, and also correctly formats \code{NA} values.
+In many cases, the implementation of \code{pillar_shaft.your_class_name()} will format the data as a character vector (using color for emphasis) and simply call \code{new_pillar_shaft()}.
+See \code{pillar:::pillar_shaft.numeric} for a code that allows changing the display depending on the available width.
 
 \code{new_pillar_shaft_simple()} provides an implementation of the \code{pillar_shaft}
 class suitable for output that has a fixed formatting, which will be
