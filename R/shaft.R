@@ -176,27 +176,27 @@ pillar_shaft.character <- function(x, ..., min_width = 3L) {
 
   # Add subtle quotes if necessary
   needs_quotes <- which(is_ambiguous_string(x))
-  if (length(needs_quotes) > 0) {
-    quoted <- gsub('"', '\\"', x[needs_quotes], fixed = TRUE)
-    quoted <- paste0(style_subtle('"'), quoted, style_subtle('"'))
-    out[needs_quotes] <- quoted
+  if (has_length(needs_quotes)) {
+    out[needs_quotes] <- gsub('"', '\\"', x[needs_quotes], fixed = TRUE)
+    out[!is.na(x)] <- paste0(style_subtle('"'), out[!is.na(x)], style_subtle('"'))
+    na_indent <- 1
+  } else {
+    na_indent <- 0
   }
 
-  pillar_shaft(new_vertical(out), ..., min_width = min_width)
+  pillar_shaft(new_vertical(out), ..., min_width = min_width, na_indent = na_indent)
 }
 
 #' @export
+#' @inheritParams new_pillar_shaft_simple
 #' @rdname pillar_shaft
-pillar_shaft.pillar_vertical <- function(x, ..., min_width = 3L) {
-  # Format NA values separately
-  is_na <- which(is.na(x))
-  if (length(is_na) > 0) {
-    na_contents <- pillar_na(use_brackets_if_no_color = TRUE)
-    x[is_na] <- na_contents
-  }
-
+pillar_shaft.pillar_vertical <- function(x, ..., min_width = 3L, na_indent = 0L) {
   width <- get_max_extent(x)
-  new_pillar_shaft_simple(x, width = width, align = "left", min_width = min(width, min_width))
+  new_pillar_shaft_simple(
+    x, width = width, align = "left", min_width = min(width, min_width),
+    na = pillar_na(use_brackets_if_no_color = TRUE),
+    na_indent = na_indent
+  )
 }
 
 #' @export
