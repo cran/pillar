@@ -3,14 +3,11 @@
 \name{type_sum}
 \alias{type_sum}
 \alias{obj_sum}
-\alias{is_vector_s3}
 \title{Provide a succinct summary of an object}
 \usage{
 type_sum(x)
 
 obj_sum(x)
-
-is_vector_s3(x)
 }
 \arguments{
 \item{x}{an object to summarise. Generally only methods of atomic vectors
@@ -23,7 +20,7 @@ and variants have been implemented.}
 occur in a data frame should return a string with four or less characters.
 For most inputs, the argument is forwarded to \code{\link[vctrs:vec_ptype_abbr]{vctrs::vec_ptype_abbr()}}.
 
-\code{obj_sum()} also includes the size of the object if \code{is_vector_s3()}
+\code{obj_sum()} also includes the size of the object if \code{vctrs::vec_is()}
 is \code{TRUE}.
 }
 \section{Lifecycle}{
