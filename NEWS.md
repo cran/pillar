@@ -1,3 +1,8 @@
+# pillar 1.4.6
+
+- Restore compatibility with R 3.2.
+
+
 # pillar 1.4.5
 
 ## Features

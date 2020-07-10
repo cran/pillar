@@ -1,6 +1,6 @@
-8707b0ed0ffd03fe73f48daa3318461d *DESCRIPTION
+88a4c27660f16d42014c25b3f107d6d4 *DESCRIPTION
 ded37a79c3ec20327069b1ec7cbe6b04 *NAMESPACE
-a3a384e9cb72319aa8d233db9ee866b9 *NEWS.md
+2463a00a3625128851525334e7aa8b03 *NEWS.md
 67cc64affadeea6b7559c3cb417ae24d *R/capital.R
 98882e12937ad615b9cb1afe782f4ed5 *R/compat-purrr.R
 99c3c3cbad49a3a3a58f262d9134e7a9 *R/deprecated.R
@@ -21,6 +21,7 @@ d5e7760fd8b710f1b8c7d6e45aea53cc *R/shaft-.R
 c9d37ded12b2d3dab65e45f08d218167 *R/sigfig.R
 6d32a521374f15ba3ea5c8e269db2f4d *R/spark-bar.R
 8d56ad5f32d3cdb9d668345e7fb85348 *R/spark-line.R
+26cae60ce5f08b6e8b6e041fb2a35e6e *R/strrep.R
 6994037607cc770698a8afa8973c352a *R/styles.R
 68cedad4720eab881c0ddf22d4d6ae07 *R/testthat.R
 134f656c5eec39b0189a9e07e79fbd2d *R/tick.R
@@ -30,7 +31,7 @@ c9d37ded12b2d3dab65e45f08d218167 *R/sigfig.R
 8161efca1bd9a99e72510b599cda543a *R/utils.R
 658d2ecedf875ef9b3738a4998ef41e9 *R/vctrs.R
 915071fbacdb04105977ebe9fff6e259 *R/width.R
-b1809053b593a9957f5689f1bfeb46eb *R/zzz.R
+0705734ed7b42069275e51177fff130f *R/zzz.R
 a4021d5429168d7576aa5c500eeab255 *README.md
 8011432b63dc8b7bb13d4343e5c50280 *man/align.Rd
 0f17f8486018437305a921cc5a55ca2c *man/colonnade.Rd
@@ -566,7 +567,7 @@ b6e309522d23f07c77789099608dd657 *tests/testthat/test-format_logical.R
 8d4b0915ef52321e385a46cb162d20c5 *tests/testthat/test-format_numeric.R
 edecbf2d871774f7718bf133b979a8be *tests/testthat/test-format_rowid.R
 9150b505eb63ff065f3d136fd7baebad *tests/testthat/test-format_scientific.R
-1b3094465f144d78f4676af1544ed45f *tests/testthat/test-format_time.R
+b2d491ca4b3149330ee50977d4597efc *tests/testthat/test-format_time.R
 08467b9b3475145265a5d6a4d01217a4 *tests/testthat/test-new-pillar-title.R
 7e27077fc41a805bc35817f8b89cf547 *tests/testthat/test-new-pillar-type.R
 c7f4975cdccb3a315672502d920e3665 *tests/testthat/test-obj-sum.R
