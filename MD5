@@ -1,6 +1,6 @@
-88a4c27660f16d42014c25b3f107d6d4 *DESCRIPTION
+a50c78822bfaac3162420c31a8701b42 *DESCRIPTION
 ded37a79c3ec20327069b1ec7cbe6b04 *NAMESPACE
-2463a00a3625128851525334e7aa8b03 *NEWS.md
+0f1dbc6e49540c310741bd8caf2668a1 *NEWS.md
 67cc64affadeea6b7559c3cb417ae24d *R/capital.R
 98882e12937ad615b9cb1afe782f4ed5 *R/compat-purrr.R
 99c3c3cbad49a3a3a58f262d9134e7a9 *R/deprecated.R
@@ -32,7 +32,7 @@ c9d37ded12b2d3dab65e45f08d218167 *R/sigfig.R
 658d2ecedf875ef9b3738a4998ef41e9 *R/vctrs.R
 915071fbacdb04105977ebe9fff6e259 *R/width.R
 0705734ed7b42069275e51177fff130f *R/zzz.R
-a4021d5429168d7576aa5c500eeab255 *README.md
+cfc71962330e4baa052d6a61303fe8d2 *README.md
 8011432b63dc8b7bb13d4343e5c50280 *man/align.Rd
 0f17f8486018437305a921cc5a55ca2c *man/colonnade.Rd
 5462f21e9a42ca2576df4d8ceda9bb71 *man/deprecated.Rd
@@ -554,7 +554,7 @@ f2c8c9bc72b6877fe493948a913efb71 *tests/testthat/test-aaa.R
 6ecb0b27c3fd37cedcbb98219343de79 *tests/testthat/test-dim.R
 d67efb5cf1b48d059bc30577da4dd436 *tests/testthat/test-distribute.R
 a08a52cf5be75f903165cab64bcaac11 *tests/testthat/test-format_asis.R
-35cef8dcb409651e9bf8e05658a1d4da *tests/testthat/test-format_character.R
+7bfc22754d7483775a01f3cee2708278 *tests/testthat/test-format_character.R
 eac93e01b5f2ced49c453c974d5fcd10 *tests/testthat/test-format_date.R
 065bab7562af22b21d1f5821515b3e9a *tests/testthat/test-format_decimal.R
 04c2dc32e2e311777598f5ab035f9fb6 *tests/testthat/test-format_factor.R
