@@ -28,6 +28,8 @@ str(tbl)
 #  format.tbl <- function (x, width = NULL, ..., n = NULL, n_extra = NULL) 
 #  {
 #      check_dots_empty(action = signal)
+#      force(x)
+#      num_colors(forget = TRUE)
 #      setup <- tbl_format_setup(x, width = width, ..., n = n, max_extra_cols = n_extra)
 #      header <- tbl_format_header(x, setup)
 #      body <- tbl_format_body(x, setup)
