@@ -19,7 +19,7 @@ example_tbl <- function(class) {
 }
 
 ## -----------------------------------------------------------------------------
-example_tbl("custom")
+example_tbl("default")
 
 ## -----------------------------------------------------------------------------
 tbl_sum.default_header_extend <- function(x, ...) {

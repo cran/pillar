@@ -9,7 +9,7 @@ pillar:::set_show_source_hooks()
 ## ----setup--------------------------------------------------------------------
 library(pillar)
 
-## ----echo = FALSE-------------------------------------------------------------
+## ----echo = FALSE, error = TRUE-----------------------------------------------
 DiagrammeR::mermaid("format.mmd")
 
 ## -----------------------------------------------------------------------------
@@ -59,16 +59,16 @@ setup
 #      "!!!!DEBUG tbl_format_setup.tbl()"
 #      rows <- nrow(x)
 #      if (is.na(rows)) {
-#          df <- as.data.frame(head(x, n + 1))
+#          df <- df_head(x, n + 1)
 #          if (nrow(df) <= n) {
 #              rows <- nrow(df)
 #          }
 #          else {
-#              df <- df[seq_len(n), , drop = FALSE]
+#              df <- vec_head(df, n)
 #          }
 #      }
 #      else {
-#          df <- as.data.frame(head(x, n))
+#          df <- df_head(x, n)
 #      }
 #      if (is.na(rows)) {
 #          needs_dots <- (nrow(df) >= n)
@@ -84,11 +84,12 @@ setup
 #      }
 #      tbl_sum <- tbl_sum(x)
 #      rownames(df) <- NULL
-#      body <- ctl_colonnade(df, has_row_id = if (.row_names_info(x) > 
+#      colonnade <- ctl_colonnade(df, has_row_id = if (.row_names_info(x) > 
 #          0) 
 #          "*"
 #      else TRUE, width = width, controller = x)
-#      extra_cols <- attr(body, "extra_cols")
+#      body <- colonnade$body
+#      extra_cols <- colonnade$extra_cols
 #      extra_cols_total <- length(extra_cols)
 #      if (extra_cols_total > max_extra_cols) {
 #          length(extra_cols) <- max_extra_cols
@@ -115,8 +116,8 @@ typeof(tbl_format_body(tbl, setup))
 #          header <- named_header
 #      }
 #      else {
-#          header <- paste0(justify(paste0(names2(named_header), 
-#              ":"), right = FALSE, space = NBSP), " ", named_header)
+#          header <- paste0(align(paste0(names2(named_header), ":"), 
+#              space = NBSP), " ", named_header)
 #      }
 #      style_subtle(format_comment(header, width = setup$width))
 #  }
@@ -198,7 +199,6 @@ ctl_new_compound_pillar(tbl, tbl$a, width = 20)
 #          widths <- pillar_get_widths(x)
 #          width <- sum(widths) - length(widths) + 1
 #      }
-#      out <- pillar_format_parts_2(x, width)
-#      new_vertical(unlist(unname(out)))
+#      new_vertical(pillar_format_parts_2(x, width))
 #  }
 

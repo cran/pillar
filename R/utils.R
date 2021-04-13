@@ -1,10 +1,23 @@
+#' @importFrom utils head
+df_head <- function(x, n) {
+  if (!is.data.frame(x)) {
+    as.data.frame(head(x, n))
+  } else {
+    vec_head(as.data.frame(x), n)
+  }
+}
+
+vec_head <- function(x, n) {
+  utils::head(x, n)
+}
+
 cat_line <- function(...) {
   cat(..., "\n", sep = "")
 }
 
 #' @importFrom utf8 utf8_width
-#' @importFrom fansi strip_sgr substr_ctl
-str_trunc <- function(x, width) {
+#' @importFrom fansi strip_sgr substr2_ctl
+str_trunc <- function(x, width, shorten = NULL) {
   if (all(is.infinite(width))) {
     return(x)
   }
@@ -12,9 +25,38 @@ str_trunc <- function(x, width) {
   str_width <- utf8_width(strip_sgr(x), encode = FALSE)
 
   too_wide <- which(!is.na(x) & str_width > width)
-  x[too_wide] <- paste0(substr_ctl(x[too_wide], 1, width - 1), get_ellipsis())
+  if (any(too_wide)) {
+    x[too_wide] <- str_add_ellipsis(x[too_wide], str_width[too_wide], width, shorten)
+  }
 
   x
+}
+
+str_add_ellipsis <- function(x, str_width, width, shorten) {
+  if (is.null(shorten)) {
+    shorten <- "back"
+  }
+
+  switch(shorten,
+    back = {
+      abbr <- substr2_ctl(x, 1, width - 1, type = "width")
+      paste0(abbr, get_ellipsis())
+    },
+    front = {
+      abbr <- substr2_ctl(x, str_width - width + 2, str_width, type = "width")
+      paste0(get_ellipsis(), abbr)
+    },
+    mid = {
+      front_width <- ceiling(width / 2) - 1
+      back_width <- width - front_width - 1
+      abbr_front <- substr2_ctl(x, 1, front_width, type = "width")
+      abbr_back <- substr2_ctl(x, str_width - back_width + 1, str_width, type = "width")
+      paste0(abbr_front, get_ellipsis(), abbr_back)
+    },
+    abbreviate = {
+      abbreviate(x, minlength = width, strict = TRUE)
+    }
+  )
 }
 
 paste_with_space_if_needed <- function(x, y) {
@@ -63,10 +105,6 @@ remove_as_is_class <- function(x) {
   }
   class(x) <- setdiff(class(x), "AsIs")
   x
-}
-
-diff_to_trunc <- function(x) {
-  x - trunc(x)
 }
 
 v <- function(x) {

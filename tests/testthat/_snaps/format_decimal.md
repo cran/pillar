@@ -16,9 +16,6 @@
          NA    
        -Inf    
         Inf    
-
----
-
     Code
       pillar(add_special(1.23456 * 10^(-3:3)))
     Output
@@ -74,22 +71,20 @@
 ---
 
     Code
-      pillar(add_special((10^(5:-5)) + 1e-07), width = 20)
+      pillar(add_special((10^(4:-4)) + 1e-06), width = 20)
     Output
       <pillar>
                      <dbl>
-            100000.       
-             10000.       
-              1000.       
-               100.       
-                10.0      
-                 1.00     
-                 0.100    
-                 0.0100   
-                 0.00100  
-                 0.000100 
-                 0.0000101
-                NA        
-              -Inf        
-               Inf        
+              10000.      
+               1000.      
+                100.      
+                 10.0     
+                  1.00    
+                  0.100   
+                  0.0100  
+                  0.00100 
+                  0.000101
+                 NA       
+               -Inf       
+                Inf       
 

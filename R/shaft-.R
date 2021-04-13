@@ -113,41 +113,93 @@ pillar_shaft.logical <- function(x, ...) {
 
 #' @export
 #' @rdname pillar_shaft
-#' @param sigfig Minimum number of significant figures to display, default: 3.
-#'   Numbers larger than 1 will potentially show more significant figures than this.
+#' @param sigfig
+#'   Deprecated, use [num()] or [set_num_opts()] on the data instead.
 pillar_shaft.numeric <- function(x, ..., sigfig = NULL) {
-  if (!is.null(attr(x, "class"))) {
+  pillar_attr <- attr(x, "pillar")
+
+  if (is.null(pillar_attr) && !is.null(attr(x, "class"))) {
     ret <- format(x)
     return(new_pillar_shaft_simple(ret, width = get_max_extent(ret), align = "left"))
   }
 
-  pillar_shaft_number(x, sigfig)
+  data <- unclass(x)
+  scale <- pillar_attr$scale
+  if (!is.null(scale)) {
+    data <- data * scale
+  }
+
+  pillar_shaft_number(
+    data,
+    sigfig %||% pillar_attr$sigfig,
+    pillar_attr$digits,
+    pillar_attr$notation,
+    pillar_attr$fixed_exponent
+  )
 }
 
-pillar_shaft_number <- function(x, sigfig) {
+pillar_shaft_number <- function(x, sigfig, digits, notation, fixed_exponent) {
+  if (!is.null(digits)) {
+    if (!is.numeric(digits) || length(digits) != 1) {
+      abort("`digits` must be a number.")
+    }
+  }
   if (is.null(sigfig)) {
     sigfig <- getOption("pillar.sigfig", 3)
     if (!is.numeric(sigfig) || length(sigfig) != 1 || sigfig < 1L) {
-      inform("Option pillar.min_chars must be a nonnegative number greater or equal 1. Resetting to 1.")
+      inform("Option pillar.sigfig must be a positive number greater or equal 1. Resetting to 1.")
       sigfig <- 1L
       options(pillar.sigfig = sigfig)
     }
   }
 
-  dec <- format_decimal(x, sigfig = sigfig)
-  sci <- format_scientific(x, sigfig = sigfig)
+  if (is.null(notation) || notation == "fit") {
+    dec <- split_decimal(x, sigfig = sigfig, digits = digits)
+    sci <- split_decimal(x, sigfig = sigfig, digits = digits, sci_mod = 1, fixed_exponent = fixed_exponent)
 
-  ret <- list(dec = dec, sci = sci)
+    max_dec_width <- getOption("pillar.max_dec_width", 13)
+    dec_width <- get_width(dec)
+    "!!!!!!DEBUG `v(dec_width)`"
 
-  MAX_DEC_WIDTH <- 13
-  dec_width <- get_width(ret$dec)
-  if (dec_width > MAX_DEC_WIDTH) {
-    dec_width <- get_width(ret$sci)
+    if (dec_width > max_dec_width) {
+      dec <- NULL
+    }
+  } else if (notation == "dec") {
+    dec <- split_decimal(x, sigfig = sigfig, digits = digits)
+    sci <- NULL
+  } else if (notation == "sci") {
+    sci <- split_decimal(
+      x,
+      sigfig = sigfig, digits = digits,
+      sci_mod = 1,
+      fixed_exponent = fixed_exponent
+    )
+    dec <- NULL
+  } else if (notation == "eng") {
+    sci <- split_decimal(
+      x,
+      sigfig = sigfig, digits = digits, sci_mod = 3,
+      fixed_exponent = fixed_exponent
+    )
+    dec <- NULL
+  } else if (notation == "si") {
+    sci <- split_decimal(
+      x,
+      sigfig = sigfig, digits = digits, sci_mod = 3, si = TRUE,
+      fixed_exponent = fixed_exponent
+    )
+    dec <- NULL
+  } else {
+    abort(paste0('Internal error: `notation = "', notation, '".'))
   }
+
+  ret <- list()
+  ret$dec <- dec
+  ret$sci <- sci
 
   new_pillar_shaft(
     ret,
-    width = dec_width,
+    width = get_width(ret$dec %||% ret$sci),
     min_width = min(get_min_widths(ret)),
     class = "pillar_shaft_decimal"
   )
@@ -155,7 +207,7 @@ pillar_shaft_number <- function(x, sigfig) {
 
 # registered in .onLoad()
 pillar_shaft.integer64 <- function(x, ..., sigfig = NULL) {
-  pillar_shaft_number(x, sigfig)
+  pillar_shaft_number(x, sigfig, digits = NULL, notation = NULL, fixed_exponent = NULL)
 }
 
 # registered in .onLoad()
@@ -166,6 +218,16 @@ pillar_shaft.Surv <- function(x, ...) {
 # registered in .onLoad()
 pillar_shaft.Surv2 <- function(x, ...) {
   new_pillar_shaft_simple(format(x), align = "right")
+}
+
+# registered in .onLoad()
+type_sum.Surv <- function(x) {
+  "Surv"
+}
+
+# registered in .onLoad()
+type_sum.Surv2 <- function(x) {
+  "Surv2"
 }
 
 #' @export
@@ -197,9 +259,13 @@ pillar_shaft.POSIXt <- function(x, ...) {
 
 #' @export
 #' @rdname pillar_shaft
-#' @param min_width Minimum number of characters to display,
-#'   unless the string fits a shorter width.
+#' @param min_width
+#'   Deprecated, use [char()] or [set_char_opts()] on the data instead.
 pillar_shaft.character <- function(x, ..., min_width = NULL) {
+  pillar_attr <- attr(x, "pillar")
+
+  min_chars <- min_width %||% pillar_attr$min_chars
+
   x <- utf8::utf8_encode(x)
   out <- x
 
@@ -214,22 +280,22 @@ pillar_shaft.character <- function(x, ..., min_width = NULL) {
   }
 
   # determine width based on width of characters in the vector
-  if (is.null(min_width)) {
-    min_width <- getOption("pillar.min_chars", 3L)
-    if (!is.numeric(min_width) || length(min_width) != 1 || min_width < 3L) {
+  if (is.null(min_chars)) {
+    min_chars <- getOption("pillar.min_chars", 3L)
+    if (!is.numeric(min_chars) || length(min_chars) != 1 || min_chars < 3L) {
       inform("Option pillar.min_chars must be a nonnegative number greater or equal 3. Resetting to 3.")
-      min_width <- 3L
-      options(pillar.min_chars = min_width)
+      min_chars <- 3L
+      options(pillar.min_chars = min_chars)
     }
   }
 
-  pillar_shaft(new_vertical(out), ..., min_width = min_width, na_indent = na_indent)
+  pillar_shaft(new_vertical(out), ..., min_width = min_chars, na_indent = na_indent, shorten = pillar_attr$shorten)
 }
 
 #' @export
 #' @inheritParams new_pillar_shaft_simple
 #' @rdname pillar_shaft
-pillar_shaft.pillar_vertical <- function(x, ..., min_width = NULL, na_indent = 0L) {
+pillar_shaft.pillar_vertical <- function(x, ..., min_width = NULL, na_indent = 0L, shorten = NULL) {
   min_width <- max(min_width, 3L)
   width <- get_max_extent(x)
 
@@ -237,7 +303,8 @@ pillar_shaft.pillar_vertical <- function(x, ..., min_width = NULL, na_indent = 0
     x,
     width = width, align = "left", min_width = min(width, min_width),
     na = pillar_na(use_brackets_if_no_color = TRUE),
-    na_indent = na_indent
+    na_indent = na_indent,
+    shorten = shorten
   )
 }
 

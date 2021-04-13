@@ -43,6 +43,9 @@ test_that("glimpse(width = Inf) raises legible error", {
 
 test_that("glimpse calls tbl_sum() (#550)", {
   skip_if(!l10n_info()$`UTF-8`) # capture_output_lines() forces native encoding
+
+  local_override_tbl_sum()
+
   iris2 <- as_override_tbl_sum(iris)
 
   expect_output(
@@ -53,6 +56,8 @@ test_that("glimpse calls tbl_sum() (#550)", {
 })
 
 test_that("output test for glimpse()", {
+  local_unknown_rows()
+
   expect_snapshot({
     glimpse(as_tbl(mtcars), width = 70L)
 
@@ -85,13 +90,13 @@ test_that("output test for glimpse()", {
     iris2 <- as_unknown_rows(iris)
     glimpse(iris2, width = 70L)
 
-    Species <- unique(iris$Species)
+    species <- unique(iris$Species)
     data <- unname(split(iris, iris$Species))
-    nested_iris_df <- tibble::tibble(Species, data)
+    nested_iris_df <- tibble::tibble(species, data)
     glimpse(nested_iris_df, width = 70L)
 
     data <- map(data, as_tbl)
-    nested_iris_tbl <- tibble::tibble(Species, data)
+    nested_iris_tbl <- tibble::tibble(species, data)
     glimpse(nested_iris_tbl, width = 70L)
   })
 })

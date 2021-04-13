@@ -1,6 +1,6 @@
 #' @export
 pillar_shaft.vctrs_unspecified <- function(x, ...) {
-  new_pillar_shaft_simple(rep(".", vctrs::vec_size(x)), align = "right")
+  new_pillar_shaft_simple(rep(".", vec_size(x)), align = "right")
 }
 
 #' @export
@@ -11,7 +11,14 @@ pillar_shaft.vctrs_vctr <- function(x, ...) {
 
 #' @export
 type_sum.vctrs_vctr <- function(x) {
-  vctrs::vec_ptype_abbr(x)
+  pillar_attr <- attr(x, "pillar")
+
+  label <- pillar_attr$label
+  if (!is.null(label)) {
+    return(I(label))
+  }
+
+  vec_ptype_abbr(x)
 }
 
 #' @export

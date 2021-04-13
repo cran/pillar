@@ -1,3 +1,31 @@
+<!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
+
+# pillar 1.6.0
+
+## Features
+
+- New `num()` and `char()` offer a flexible way to customize the display of numeric and character columns (#191, #84).
+- New `"pillar.max_dec_width"` option (#308).
+- New `format_type_sum.AsIs()` avoids the need to implement your own `format_type_sum()` method (#286).
+- `align()` gains `space` argument to control the character used for filling (#285).
+- Numbers in scientific and decimal notation are formatted with the same rules regarding significant or decimal digits (#297).
+
+## Bug fixes
+
+- Load the debugme package only if the `DEBUGME` environment variable is set.
+- More accurate detection if the decimal dot is necessary, and how many digits to show after the decimal dot (#298).
+- Use display width instead of number of characters when truncating character columns.
+
+## Documentation
+
+- New `vignette("numbers")` and `vignette("digits")` (#308).
+
+## Internal
+
+- Compatibility with vctrs 0.3.7 (#291).
+- `format.pillar_shaft_simple()` requires `"na"` attribute and no longer defaults to `pillar_na()` (#273).
+
+
 # pillar 1.5.1
 
 ## Features
@@ -9,6 +37,7 @@
 - Color and formatting can now be reliably turned off by setting the `"cli.num_colors"` option to 1 (#269).
 
 ## Documentation
+
 - Add examples for new functions (#264).
 - Fix lifecycle badges everywhere.
 
@@ -223,8 +252,7 @@
 
 # pillar 1.2.1
 
-Display
--------
+## Display
 
 - Turned off using subtle style for digits that are considered insignificant.  Negative numbers are shown all red.  Set the new option `pillar.subtle_num` to `TRUE` to turn it on again (default: `FALSE`).
 - The negation sign is printed next to the number again (#91).
@@ -234,16 +262,14 @@ Display
 - The decimal dot is now always printed for numbers of type `numeric`. Trailing zeros are not shown anymore if all displayed numbers are whole numbers (#62).
 - Decimal values longer than 13 characters always print in scientific notation.
 
-Bug fixes
----------
+# Bug fixes
 
 - Numeric values with a `"class"` attribute (e.g., `Duration` from lubridate) are now formatted using `format()` if the `pillar_shaft()` method is not implemented for that class (#88).
 - Very small numbers (like `1e-310`) are now printed correctly (tidyverse/tibble#377).
 - Fix representation of right-hand side for `getOption("pillar.sigfig") >= 6` (tidyverse/tibble#380).
 - Fix computation of significant figures for numbers with absolute value >= 1 (#98).
 
-New functions
--------------
+# New functions
 
 - New styling helper `style_subtle_num()`, formatting depends on the `pillar.subtle_num` option.
 
