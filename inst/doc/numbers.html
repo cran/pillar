@@ -219,7 +219,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>For automatic recovery, we can also define our version of <code>var()</code>, or even override the base implementation:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>var_ <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">var</span>(x, ...)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  vctrs<span class="sc">::</span><span class="fu">vec_restore</span>(out, x)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  vctrs<span class="sc">::</span><span class="fu">vec_restore</span>(out, vctrs<span class="sc">::</span><span class="fu">vec_proxy</span>(x))</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">var_</span>(x)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;pillar_num(eng)[1]&gt;</span></span>
@@ -229,7 +229,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">force</span>(fun)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(x, ...) {</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">fun</span>(x, ...)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    vctrs<span class="sc">::</span><span class="fu">vec_restore</span>(out, x)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    vctrs<span class="sc">::</span><span class="fu">vec_restore</span>(out, vctrs<span class="sc">::</span><span class="fu">vec_proxy</span>(x))</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
@@ -242,7 +242,176 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">sd_</span>(x)</span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;pillar_num(eng)[1]&gt;</span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.527525e0</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(units)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>set_units.pillar_num <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  unclassed <span class="ot">&lt;-</span> x</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">class</span>(unclassed) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_units</span>(unclassed, ...)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">set_units</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, m)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">set_units</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, km)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">sci_int =</span> <span class="fu">set_num_opts</span>(m <span class="sc">+</span> km, <span class="at">notation =</span> <span class="st">&quot;sci&quot;</span>),</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits_int =</span> <span class="fu">set_num_opts</span>(km <span class="sc">+</span> m, <span class="at">digits =</span> <span class="dv">4</span>),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">sci_ext =</span> <span class="fu">set_units</span>(<span class="fu">num</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">+</span> <span class="fl">0.001</span>, <span class="at">notation =</span> <span class="st">&quot;sci&quot;</span>), km)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 x 3</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sci_int digits_int sci_ext</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       [m]       [km]    [km]</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1.001e3     1.0010 1.001e0</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2.002e3     2.0020 2.001e0</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 3.003e3     3.0030 3.001e0</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">sci_int =</span> <span class="fu">set_num_opts</span>(m, <span class="at">notation =</span> <span class="st">&quot;sci&quot;</span>) <span class="sc">+</span> km,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits_int =</span> <span class="fu">set_num_opts</span>(km, <span class="at">digits =</span> <span class="dv">4</span>) <span class="sc">+</span> m,</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">sci_ext =</span> <span class="fu">set_units</span>(<span class="fu">num</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">notation =</span> <span class="st">&quot;sci&quot;</span>), m) <span class="sc">+</span> km</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 x 3</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   sci_int digits_int sci_ext</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       [m]       [km]     [m]</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1.001e3     1.0010 1.001e3</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2.002e3     2.0020 2.002e3</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 3.003e3     3.0030 3.003e3</span></span></code></pre></div>
 </div>
+<div id="formattable" class="section level3">
+<h3>formattable</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(formattable)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pillar_shaft.formattable <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  pillar<span class="sc">::</span><span class="fu">new_pillar_shaft_simple</span>(<span class="fu">format</span>(x), <span class="at">align =</span> <span class="st">&quot;right&quot;</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>pillar_shaft.formattable_currency <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  formattable <span class="ot">&lt;-</span> <span class="fu">attr</span>(x, <span class="st">&quot;formattable&quot;</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pillar_shaft</span>(<span class="fu">num</span>(<span class="fu">unclass</span>(x), <span class="at">digits =</span> formattable<span class="sc">$</span>digits))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>pillar_shaft.formattable_percent <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  formattable <span class="ot">&lt;-</span> <span class="fu">attr</span>(x, <span class="st">&quot;formattable&quot;</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pillar_shaft</span>(<span class="fu">num</span>(<span class="fu">unclass</span>(x), <span class="at">digits =</span> formattable<span class="sc">$</span>digits, <span class="at">label =</span> <span class="st">&quot;%&quot;</span>, <span class="at">scale =</span> <span class="dv">100</span>))</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>pillar_shaft.formattable_scientific <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pillar_shaft</span>(<span class="fu">num</span>(<span class="fu">unclass</span>(x), <span class="at">notation =</span> <span class="st">&quot;sci&quot;</span>))</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>type_sum.formattable <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  formattable <span class="ot">&lt;-</span> <span class="fu">attr</span>(x, <span class="st">&quot;formattable&quot;</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">inherits</span>(x, <span class="st">&quot;formattable_currency&quot;</span>)) {</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">I</span>(<span class="fu">sub</span>(<span class="st">&quot;^formattable_&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">class</span>(x)[[<span class="dv">1</span>]]))</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">inherits</span>(x, <span class="st">&quot;formattable_percent&quot;</span>)) {</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">I</span>(<span class="st">&quot;%&quot;</span>)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">abbreviate</span>(<span class="fu">sub</span>(<span class="st">&quot;^formattable_&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">class</span>(x)[[<span class="dv">1</span>]]), <span class="dv">4</span>)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="fu">num_currency</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">*</span> <span class="dv">100</span> <span class="sc">+</span> <span class="fl">0.1</span>)</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] $100.10 $200.10 $300.10</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="fu">num_percent</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">*</span> <span class="fl">0.1</span> <span class="sc">+</span> <span class="fl">0.001</span>)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 10.10% 20.10% 30.10%</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="fu">num_scientific</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">*</span> <span class="fl">0.1</span> <span class="sc">+</span> <span class="fl">0.001</span>)</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 1.0100e-01 2.0100e-01 3.0100e-01</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">currency =</span> <span class="fu">num_currency</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">*</span> <span class="dv">100</span> <span class="sc">+</span> <span class="fl">0.1</span>),</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">percent =</span> <span class="fu">num_percent</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">*</span> <span class="fl">0.1</span> <span class="sc">+</span> <span class="fl">0.001</span>),</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">scientific =</span> <span class="fu">num_scientific</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span> <span class="sc">*</span> <span class="fl">0.1</span> <span class="sc">+</span> <span class="fl">0.001</span>)</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 x 3</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   currency percent scientific</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          $       %     &lt;scnt&gt;</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    100.1    10.1    1.01e-1</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    200.1    20.1    2.01e-1</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3    300.1    30.1    3.01e-1</span></span></code></pre></div>
+</div>
+<div id="scales" class="section level3">
+<h3>scales</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">num</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span> <span class="sc">/</span> <span class="dv">100</span>, <span class="at">label =</span> <span class="st">&quot;%&quot;</span>, <span class="at">scale =</span> <span class="dv">100</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>scales<span class="sc">::</span><span class="fu">squish</span>(x)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;pillar_num{%}*100[10]&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>x <span class="sc">&lt;</span> <span class="dv">0</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>x <span class="sc">&lt;</span> 0L</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>scales<span class="sc">::</span><span class="fu">cscale</span>(x, scales<span class="sc">::</span><span class="fu">rescale_pal</span>())</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in UseMethod(&quot;rescale&quot;): no applicable method for &#39;rescale&#39; applied to an object of class &quot;c(&#39;pillar_num&#39;, &#39;pillar_vctr&#39;, &#39;vctrs_vctr&#39;, &#39;double&#39;)&quot;</span></span></code></pre></div>
+</div>
+<div id="ggplot2" class="section level3">
+<h3>ggplot2</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>scale_type.pillar_num <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;continuous&quot;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="sc">+</span> <span class="fu">geom_point</span>()</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="rule-based-decoration" class="section level2">
+<h2>Rule-based decoration</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>data_units <span class="ot">&lt;-</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  palmerpenguins<span class="sc">::</span>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">ends_with</span>(<span class="st">&quot;_mm&quot;</span>), set_units, <span class="st">&quot;mm&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">ends_with</span>(<span class="st">&quot;_g&quot;</span>), set_units, <span class="st">&quot;g&quot;</span>))</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>data_units <span class="sc">%&gt;%</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">bill_area =</span> bill_length_mm <span class="sc">*</span> bill_depth_mm, <span class="at">.after =</span> island)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 344 x 9</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    species island    bill_area bill_length_mm bill_depth_mm flipper_length_mm</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;   &lt;fct&gt;        [mm^2]           [mm]          [mm]              [mm]</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 Adelie  Torgersen    731.17           39.1          18.7               181</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 Adelie  Torgersen    687.3            39.5          17.4               186</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 Adelie  Torgersen    725.4            40.3          18                 195</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 Adelie  Torgersen     NA              NA            NA                  NA</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 Adelie  Torgersen    708.31           36.7          19.3               193</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 Adelie  Torgersen    809.58           39.3          20.6               190</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 Adelie  Torgersen    692.42           38.9          17.8               181</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 Adelie  Torgersen    768.32           39.2          19.6               195</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 Adelie  Torgersen    617.21           34.1          18.1               193</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 Adelie  Torgersen    848.4            42            20.2               190</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 334 more rows, and 3 more variables: body_mass_g [g], sex &lt;fct&gt;,</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   year &lt;int&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data_decor <span class="ot">&lt;-</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  data_units <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decorate</span>(year, <span class="at">digits =</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decorate</span>(<span class="fu">where</span>(is.numeric), <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data_decor <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">bill_area =</span> bill_length_mm <span class="sc">*</span> bill_depth_mm, <span class="at">.after =</span> island)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 344 x 9
+#&gt;    species island    bill_area bill_length_mm bill_depth_mm flipper_length_mm
+#&gt;    &lt;fct&gt;   &lt;fct&gt;        [mm^2]           [mm]          [mm]              [mm]
+#&gt;  1 Adelie  Torgersen   731.170         39.100        18.700           181.000
+#&gt;  2 Adelie  Torgersen   687.300         39.500        17.400           186.000
+#&gt;  3 Adelie  Torgersen   725.400         40.300        18.000           195.000
+#&gt;  4 Adelie  Torgersen    NA             NA            NA                NA    
+#&gt;  5 Adelie  Torgersen   708.310         36.700        19.300           193.000
+#&gt;  6 Adelie  Torgersen   809.580         39.300        20.600           190.000
+#&gt;  7 Adelie  Torgersen   692.420         38.900        17.800           181.000
+#&gt;  8 Adelie  Torgersen   768.320         39.200        19.600           195.000
+#&gt;  9 Adelie  Torgersen   617.210         34.100        18.100           193.000
+#&gt; 10 Adelie  Torgersen   848.400         42.000        20.200           190.000
+#&gt; # … with 334 more rows, and 3 more variables: body_mass_g [g], sex &lt;fct&gt;,
+#&gt; #   year &lt;int&gt;</code></pre>
+<p>`````</p>
 </div>
 
 
