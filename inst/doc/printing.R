@@ -18,23 +18,19 @@ print(tbl, width = 23)
 str(tbl)
 
 ## ----show_source = TRUE-------------------------------------------------------
-#  print.tbl <- function (x, width = NULL, ..., n = NULL, n_extra = NULL) 
+#  print.tbl <- function (x, width = NULL, ..., n = NULL, max_extra_cols = NULL, 
+#      max_footer_lines = NULL) 
 #  {
-#      writeLines(format(x, width = width, ..., n = n, n_extra = n_extra))
-#      invisible(x)
+#      print_tbl(x, width, ..., n = n, max_extra_cols = max_extra_cols, 
+#          max_footer_lines = max_footer_lines)
 #  }
 
 ## ----show_source = TRUE-------------------------------------------------------
-#  format.tbl <- function (x, width = NULL, ..., n = NULL, n_extra = NULL) 
+#  format.tbl <- function (x, width = NULL, ..., n = NULL, max_extra_cols = NULL, 
+#      max_footer_lines = NULL) 
 #  {
-#      check_dots_empty(action = signal)
-#      force(x)
-#      num_colors(forget = TRUE)
-#      setup <- tbl_format_setup(x, width = width, ..., n = n, max_extra_cols = n_extra)
-#      header <- tbl_format_header(x, setup)
-#      body <- tbl_format_body(x, setup)
-#      footer <- tbl_format_footer(x, setup)
-#      c(header, body, footer)
+#      format_tbl(x, width, ..., n = n, max_extra_cols = max_extra_cols, 
+#          max_footer_lines = max_footer_lines)
 #  }
 
 ## -----------------------------------------------------------------------------
@@ -42,19 +38,22 @@ setup <- tbl_format_setup(tbl, width = 24)
 setup
 
 ## ----show_source = TRUE-------------------------------------------------------
-#  tbl_format_setup <- function (x, width = NULL, ..., n = NULL, max_extra_cols = NULL) 
+#  tbl_format_setup <- function (x, width = NULL, ..., n = NULL, max_extra_cols = NULL, 
+#      max_footer_lines = NULL) 
 #  {
 #      "!!!!DEBUG tbl_format_setup()"
 #      width <- get_width_print(width)
 #      n <- get_n_print(n, nrow(x))
 #      max_extra_cols <- get_max_extra_cols(max_extra_cols)
-#      out <- tbl_format_setup_(x, width, ..., n = n, max_extra_cols = max_extra_cols)
+#      max_footer_lines <- get_max_footer_lines(max_footer_lines)
+#      out <- tbl_format_setup_(x, width, ..., n = n, max_extra_cols = max_extra_cols, 
+#          max_footer_lines = max_footer_lines)
 #      return(out)
 #      UseMethod("tbl_format_setup")
 #  }
 
 ## ----show_source = TRUE-------------------------------------------------------
-#  tbl_format_setup.tbl <- function (x, width, ..., n, max_extra_cols) 
+#  tbl_format_setup.tbl <- function (x, width, ..., n, max_extra_cols, max_footer_lines) 
 #  {
 #      "!!!!DEBUG tbl_format_setup.tbl()"
 #      rows <- nrow(x)
@@ -96,7 +95,8 @@ setup
 #      }
 #      new_tbl_format_setup(x = x, df = df, width = width, tbl_sum = tbl_sum, 
 #          body = body, rows_missing = rows_missing, rows_total = rows, 
-#          extra_cols = extra_cols, extra_cols_total = extra_cols_total)
+#          extra_cols = extra_cols, extra_cols_total = extra_cols_total, 
+#          max_footer_lines = max_footer_lines)
 #  }
 
 ## -----------------------------------------------------------------------------
@@ -132,8 +132,8 @@ typeof(tbl_format_body(tbl, setup))
 ## ----show_source = TRUE-------------------------------------------------------
 #  tbl_format_footer.tbl <- function (x, setup, ...) 
 #  {
-#      footer <- pre_dots(format_footer(x, setup))
-#      footer_comment <- split_lines(format_comment(footer, width = setup$width))
+#      footer <- format_footer(x, setup)
+#      footer_comment <- wrap_footer(footer, setup)
 #      style_subtle(footer_comment)
 #  }
 
@@ -199,6 +199,6 @@ ctl_new_compound_pillar(tbl, tbl$a, width = 20)
 #          widths <- pillar_get_widths(x)
 #          width <- sum(widths) - length(widths) + 1
 #      }
-#      new_vertical(pillar_format_parts_2(x, width))
+#      new_vertical(pillar_format_parts_2(x, width)$aligned[[1]])
 #  }
 

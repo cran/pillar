@@ -31,7 +31,7 @@ type_sum.factor <- function(x) {
 
 #' @export
 type_sum.default <- function(x) {
-  pillar_attr <- attr(x, "pillar")
+  pillar_attr <- attr(x, "pillar", exact = TRUE)
 
   label <- pillar_attr$label
   if (!is.null(label)) {
@@ -64,11 +64,13 @@ vec_ptype_abbr.pillar_empty_col <- function(x, ...) {
 }
 
 #' @description
-#' `obj_sum()` also includes the size of the object if [vctrs::vec_is()]
-#' is `TRUE`.
+#' `obj_sum()` also includes the size (but not the shape) of the object
+#' if [vctrs::vec_is()] is `TRUE`.
 #' It should always return a string (a character vector of length one).
+#' As of pillar v1.6.1, the default method forwards to [vctrs::vec_ptype_abbr()]
+#' for vectors and to [type_sum()] for other objects.
+#' Previous versions always forwarded to [type_sum()].
 #'
-#' @keywords internal
 #' @examples
 #' obj_sum(1:10)
 #' obj_sum(matrix(1:10))

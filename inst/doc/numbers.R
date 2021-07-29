@@ -44,8 +44,8 @@ num(var(x), notation = "eng")
 
 ## ----numbers-16b--------------------------------------------------------------
 var_ <- function(x, ...) {
-  out <- var(x, ...)
-  vctrs::vec_restore(out, vctrs::vec_proxy(x))
+  out <- var(vctrs::vec_proxy(x), ...)
+  vctrs::vec_restore(out, x)
 }
 var_(x)
 
@@ -53,8 +53,8 @@ var_(x)
 make_restore <- function(fun) {
   force(fun)
   function(x, ...) {
-    out <- fun(x, ...)
-    vctrs::vec_restore(out, vctrs::vec_proxy(x))
+    out <- fun(vctrs::vec_proxy(x), ...)
+    vctrs::vec_restore(out, x)
   }
 }
 
@@ -96,13 +96,13 @@ pillar_shaft.formattable <- function(x, ...) {
 }
 
 pillar_shaft.formattable_currency <- function(x, ...) {
-  formattable <- attr(x, "formattable")
+  formattable <- attr(x, "formattable", exact = TRUE)
 
   pillar_shaft(num(unclass(x), digits = formattable$digits))
 }
 
 pillar_shaft.formattable_percent <- function(x, ...) {
-  formattable <- attr(x, "formattable")
+  formattable <- attr(x, "formattable", exact = TRUE)
 
   pillar_shaft(num(unclass(x), digits = formattable$digits, label = "%", scale = 100))
 }
@@ -112,7 +112,7 @@ pillar_shaft.formattable_scientific <- function(x, ...) {
 }
 
 type_sum.formattable <- function(x) {
-  formattable <- attr(x, "formattable")
+  formattable <- attr(x, "formattable", exact = TRUE)
 
   if (inherits(x, "formattable_currency")) {
     I(sub("^formattable_", "", class(x)[[1]]))

@@ -46,6 +46,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -175,8 +176,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="overview" class="section level2">
 <h2>Overview</h2>
 <p>The overall control and data flow are illustrated in the diagram below. Boxes are functions and methods. Solid lines are function calls. Dotted lines represent information that a function obtains via argument or (in the case of options) queries actively.</p>
-<div id="htmlwidget-2211e538739b148f6ce5" style="width:288px;height:288px;" class="DiagrammeR html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2211e538739b148f6ce5">{"x":{"diagram":"graph TD\n  print.tbl[\"print.tbl()\"] --> format.tbl[\"format.tbl()\"]\n  format.tbl --> tbl_format_setup[\"tbl_format_setup()\"]\n  options(Options: n and n_extra) -.-> tbl_format_setup\n  format.tbl --> tbl_format_header[\"tbl_format_header()\"]\n  format.tbl --> tbl_format_body[\"tbl_format_body()\"]\n  format.tbl --> tbl_format_footer[\"tbl_format_footer()\"]\n  tbl_format_setup -.-> tbl_sum[\"tbl_sum()\"]\n  tbl_sum -.-> setup(Setup object)\n  tbl_format_setup -.-> ctl_new_compound_pillar[\"ctl_new_compound_pillar()\"]\n  ctl_new_compound_pillar -.-> ctl_new_pillar[\"ctl_new_pillar()\"]\n  ctl_new_pillar -.-> setup(Setup object)\n  setup -.-> tbl_format_header\n  setup -.-> tbl_format_body\n  setup -.-> tbl_format_footer\n  tbl_format_header -.-> print(Printed output)\n  tbl_format_body -.-> print\n  tbl_format_footer -.-> print"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-1710d3534610e07d36f9" style="width:288px;height:288px;" class="DiagrammeR html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1710d3534610e07d36f9">{"x":{"diagram":"graph TD\n  print.tbl[\"print.tbl()\"] --> format.tbl[\"format.tbl()\"]\n  format.tbl --> tbl_format_setup[\"tbl_format_setup()\"]\n  options(Options: n and n_extra) -.-> tbl_format_setup\n  format.tbl --> tbl_format_header[\"tbl_format_header()\"]\n  format.tbl --> tbl_format_body[\"tbl_format_body()\"]\n  format.tbl --> tbl_format_footer[\"tbl_format_footer()\"]\n  tbl_format_setup -.-> tbl_sum[\"tbl_sum()\"]\n  tbl_sum -.-> setup(Setup object)\n  tbl_format_setup -.-> ctl_new_compound_pillar[\"ctl_new_compound_pillar()\"]\n  ctl_new_compound_pillar -.-> ctl_new_pillar[\"ctl_new_pillar()\"]\n  ctl_new_pillar -.-> setup(Setup object)\n  setup -.-> tbl_format_header\n  setup -.-> tbl_format_body\n  setup -.-> tbl_format_footer\n  tbl_format_header -.-> print(Printed output)\n  tbl_format_body -.-> print\n  tbl_format_footer -.-> print"},"evals":[],"jsHooks":[]}</script>
 <p>The pillar package uses debugme for debugging. Activating debugging for pillar is another way to track the control flow, see <code>vignette(&quot;debugme&quot;)</code> for details.</p>
 </div>
 <div id="initialization" class="section level2">
@@ -184,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>A tibble is a list of columns of class <code>&quot;tbl_df&quot;</code> and <code>&quot;tbl&quot;</code>. Printing is designed to work for non-data-frame table-like objects such as lazy tables. The <code>print.tbl()</code> method calls <code>format()</code> for the object and prints the output.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">b =</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">c =</span> <span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">d =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">9</span>), <span class="at">e =</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">12</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tbl, <span class="at">width =</span> <span class="dv">23</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 x 3</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 3</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       a   b$c    $d</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1     1     4     7</span></span>
@@ -203,28 +204,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <summary>
 Source code of <code>pillar:::print.tbl()</code>
 </summary>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>print.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, <span class="at">width =</span> <span class="cn">NULL</span>, ..., <span class="at">n =</span> <span class="cn">NULL</span>, <span class="at">n_extra =</span> <span class="cn">NULL</span>) </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">writeLines</span>(<span class="fu">format</span>(x, <span class="at">width =</span> width, ..., <span class="at">n =</span> n, <span class="at">n_extra =</span> n_extra))</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">invisible</span>(x)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>print.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, <span class="at">width =</span> <span class="cn">NULL</span>, ..., <span class="at">n =</span> <span class="cn">NULL</span>, <span class="at">max_extra_cols =</span> <span class="cn">NULL</span>, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_footer_lines =</span> <span class="cn">NULL</span>) </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print_tbl</span>(x, width, ..., <span class="at">n =</span> n, <span class="at">max_extra_cols =</span> max_extra_cols, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">max_footer_lines =</span> max_footer_lines)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p>The <code>format.tbl()</code> method creates a setup object, and uses that object to format header, body and footer.</p>
 <details>
 <summary>
 Source code of <code>pillar:::format.tbl()</code>
 </summary>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>format.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, <span class="at">width =</span> <span class="cn">NULL</span>, ..., <span class="at">n =</span> <span class="cn">NULL</span>, <span class="at">n_extra =</span> <span class="cn">NULL</span>) </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">check_dots_empty</span>(<span class="at">action =</span> signal)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">force</span>(x)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">num_colors</span>(<span class="at">forget =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    setup <span class="ot">&lt;-</span> <span class="fu">tbl_format_setup</span>(x, <span class="at">width =</span> width, ..., <span class="at">n =</span> n, <span class="at">max_extra_cols =</span> n_extra)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    header <span class="ot">&lt;-</span> <span class="fu">tbl_format_header</span>(x, setup)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    body <span class="ot">&lt;-</span> <span class="fu">tbl_format_body</span>(x, setup)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    footer <span class="ot">&lt;-</span> <span class="fu">tbl_format_footer</span>(x, setup)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(header, body, footer)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>format.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, <span class="at">width =</span> <span class="cn">NULL</span>, ..., <span class="at">n =</span> <span class="cn">NULL</span>, <span class="at">max_extra_cols =</span> <span class="cn">NULL</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_footer_lines =</span> <span class="cn">NULL</span>) </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">format_tbl</span>(x, width, ..., <span class="at">n =</span> n, <span class="at">max_extra_cols =</span> max_extra_cols, </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">max_footer_lines =</span> max_footer_lines)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p>While it’s possible to extend or override these methods for your <code>&quot;tbl&quot;</code> subclass, often overriding the more specialized methods shown below is sufficient.</p>
 </div>
@@ -235,7 +232,7 @@ Source code of <code>pillar:::format.tbl()</code>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>setup</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;pillar_tbl_format_setup&gt;</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;tbl_format_header(setup)&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 x 3</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 3</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;tbl_format_body(setup)&gt;</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       a   b$c    $d</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;</span></span>
@@ -251,23 +248,26 @@ Source code of <code>pillar:::format.tbl()</code>
 <summary>
 Source code of <code>tbl_format_setup()</code>
 </summary>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tbl_format_setup <span class="ot">&lt;-</span> <span class="cf">function</span> (x, <span class="at">width =</span> <span class="cn">NULL</span>, ..., <span class="at">n =</span> <span class="cn">NULL</span>, <span class="at">max_extra_cols =</span> <span class="cn">NULL</span>) </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;!!!!DEBUG tbl_format_setup()&quot;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    width <span class="ot">&lt;-</span> <span class="fu">get_width_print</span>(width)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">get_n_print</span>(n, <span class="fu">nrow</span>(x))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    max_extra_cols <span class="ot">&lt;-</span> <span class="fu">get_max_extra_cols</span>(max_extra_cols)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">tbl_format_setup_</span>(x, width, ..., <span class="at">n =</span> n, <span class="at">max_extra_cols =</span> max_extra_cols)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(out)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">UseMethod</span>(<span class="st">&quot;tbl_format_setup&quot;</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tbl_format_setup <span class="ot">&lt;-</span> <span class="cf">function</span> (x, <span class="at">width =</span> <span class="cn">NULL</span>, ..., <span class="at">n =</span> <span class="cn">NULL</span>, <span class="at">max_extra_cols =</span> <span class="cn">NULL</span>, </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_footer_lines =</span> <span class="cn">NULL</span>) </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;!!!!DEBUG tbl_format_setup()&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    width <span class="ot">&lt;-</span> <span class="fu">get_width_print</span>(width)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">get_n_print</span>(n, <span class="fu">nrow</span>(x))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    max_extra_cols <span class="ot">&lt;-</span> <span class="fu">get_max_extra_cols</span>(max_extra_cols)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    max_footer_lines <span class="ot">&lt;-</span> <span class="fu">get_max_footer_lines</span>(max_footer_lines)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">tbl_format_setup_</span>(x, width, ..., <span class="at">n =</span> n, <span class="at">max_extra_cols =</span> max_extra_cols, </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">max_footer_lines =</span> max_footer_lines)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(out)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">UseMethod</span>(<span class="st">&quot;tbl_format_setup&quot;</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p>The default implementation converts the input to a data frame via <code>as.data.frame(head(x))</code>, and returns an object constructed with <code>new_tbl_format_setup()</code> that contains the data frame and additional information. If you override this method, e.g. to incorporate more information, you can add new items to the default setup object, but you should not overwrite existing items.</p>
 <details>
 <summary>
 Source code of <code>pillar:::tbl_format_setup.tbl()</code>
 </summary>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tbl_format_setup.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, width, ..., n, max_extra_cols) </span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tbl_format_setup.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, width, ..., n, max_extra_cols, max_footer_lines) </span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>{</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;!!!!DEBUG tbl_format_setup.tbl()&quot;</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    rows <span class="ot">&lt;-</span> <span class="fu">nrow</span>(x)</span>
@@ -309,8 +309,9 @@ Source code of <code>pillar:::tbl_format_setup.tbl()</code>
 <span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="fu">new_tbl_format_setup</span>(<span class="at">x =</span> x, <span class="at">df =</span> df, <span class="at">width =</span> width, <span class="at">tbl_sum =</span> tbl_sum, </span>
 <span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">body =</span> body, <span class="at">rows_missing =</span> rows_missing, <span class="at">rows_total =</span> rows, </span>
-<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">extra_cols =</span> extra_cols, <span class="at">extra_cols_total =</span> extra_cols_total)</span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="at">extra_cols =</span> extra_cols, <span class="at">extra_cols_total =</span> extra_cols_total, </span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>        <span class="at">max_footer_lines =</span> max_footer_lines)</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p>At the core, the internal function <code>ctl_colonnade()</code> composes the body. Its functionality and the customization points it offers are detailed in the “Colonnade” section below.</p>
 </div>
@@ -318,7 +319,7 @@ Source code of <code>pillar:::tbl_format_setup.tbl()</code>
 <h2>Header, body, footer</h2>
 <p>The components of a tibble are formatted with <code>tbl_format_*()</code> generics, which also dispatch on the container to allow extension or overrides. They return a character vector, with one element per line printed. The setup object is required.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl_format_header</span>(tbl, setup)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;# A tibble: 3 x 3&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;# A tibble: 3 × 3&quot;</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tbl_format_body</span>(tbl, setup)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       a   b$c    $d</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt;</span></span>
@@ -366,8 +367,8 @@ Source code of <code>pillar:::tbl_format_footer.tbl()</code>
 </summary>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>tbl_format_footer.tbl <span class="ot">&lt;-</span> <span class="cf">function</span> (x, setup, ...) </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    footer <span class="ot">&lt;-</span> <span class="fu">pre_dots</span>(<span class="fu">format_footer</span>(x, setup))</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    footer_comment <span class="ot">&lt;-</span> <span class="fu">split_lines</span>(<span class="fu">format_comment</span>(footer, <span class="at">width =</span> setup<span class="sc">$</span>width))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    footer <span class="ot">&lt;-</span> <span class="fu">format_footer</span>(x, setup)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    footer_comment <span class="ot">&lt;-</span> <span class="fu">wrap_footer</span>(footer, setup)</span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">style_subtle</span>(footer_comment)</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
@@ -504,7 +505,7 @@ Source code of <code>pillar:::format.pillar()</code>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        widths <span class="ot">&lt;-</span> <span class="fu">pillar_get_widths</span>(x)</span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        width <span class="ot">&lt;-</span> <span class="fu">sum</span>(widths) <span class="sc">-</span> <span class="fu">length</span>(widths) <span class="sc">+</span> <span class="dv">1</span></span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">new_vertical</span>(<span class="fu">pillar_format_parts_2</span>(x, width))</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">new_vertical</span>(<span class="fu">pillar_format_parts_2</span>(x, width)<span class="sc">$</span>aligned[[<span class="dv">1</span>]])</span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 </div>
