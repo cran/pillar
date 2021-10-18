@@ -1,5 +1,22 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# pillar 1.6.4
+
+## Bug fixes
+
+- Fix printing for some tibbles where a fixed-width column is followed by a column with variable width (#366).
+- Avoid nested backtick blocks in vignette.
+
+## Breaking changes
+
+- `colonnade()` no longer exists, `squeeze()` and `extra_cols()` now raise an error (#272).
+- `num()` requires an integerish `digits` argument (#362).
+
+## Documentation
+
+- Link to tibble vignettes and documentation pages.
+
+
 # pillar 1.6.3
 
 - Avoid blanket import for lifecycle package for compatibility with upcoming rlang (#368, @romainfrancois).
