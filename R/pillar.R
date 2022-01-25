@@ -15,10 +15,10 @@ new_pillar_1e <- function(capital, shaft, width = NULL) {
 
 #' @export
 format.pillar_1e <- function(x, width = NULL, ...) {
-  width <- pillar_get_width(x, width)
+  width <- pillar_get_width_1e(x, width)
   out <- pillar_format_parts(x, width)
 
-  new_vertical(unlist(unname(out)))
+  as_glue(unlist(unname(out)))
 }
 
 #' @export
@@ -27,7 +27,7 @@ print.pillar_1e <- function(x, ...) {
   print(format(x, ...))
 }
 
-pillar_get_width <- function(x, width) {
+pillar_get_width_1e <- function(x, width) {
   if (is.null(width)) {
     width <- get_width(x)
   }
@@ -65,4 +65,10 @@ format_abbrev <- function(x, title = NULL, space = " ") {
     title_format <- format_full_pillar_title(title)
     paste0(title_format, space, type_format)
   }
+}
+
+format_full_pillar_title <- function(title) {
+  # Backticks already added here
+  title <- format_title(title, Inf)
+  style_title(title)
 }

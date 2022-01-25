@@ -1,10 +1,5 @@
-new_data_frame_pillar <- function(x, controller, width, title) {
-  pillars <- new_packed_pillars(x, controller, width, title)
-  combine_pillars(pillars)
-}
-
-new_packed_pillars <- function(x, controller, width, title) {
-  "!!!!!DEBUG new_packed_pillars(`v(width)`, `v(title)`)"
+new_data_frame_pillar_list <- function(x, controller, width, title, first_pillar = NULL) {
+  "!!!!!DEBUG new_data_frame_pillar_list(`v(width)`, `v(title)`)"
 
   if (ncol(x) == 0) {
     return(compact(list(pillar_from_shaft(
@@ -23,26 +18,33 @@ new_packed_pillars <- function(x, controller, width, title) {
   for (i in seq_along(x)) {
     "!!!!!DEBUG i = `i`, width = `width`"
 
-    # FIXME
-    # sub_title <- c(title, ticked_names[[i]])
-    sub_title <- ticked_names[[i]]
-    if (!is.null(title)) {
-      if (i == 1) {
-        title[[length(title)]] <- paste0(title[[length(title)]], "$")
-      } else {
-        title[[length(title)]] <- "$"
+    if (i == 1 && !is.null(first_pillar)) {
+      pillar <- first_pillar
+    } else {
+      # Call ctl_new_pillar_list(), return only the first sub-pillar
+      # thanks to width = NULL
+      new_pillars <- ctl_new_pillar_list(
+        controller, x[[i]],
+        width = NULL,
+        title = c(title, ticked_names[[i]])
+      )
+
+      # Safety check:
+      if (length(new_pillars) == 0) {
+        # NULL return: doesn't fit
+        break
       }
-      sub_title <- c(title, sub_title)
+
+      pillar <- new_pillars[[1]]
     }
 
-    # Call ctl_new_compound_pillar() only for objects that can fit
-    pillar <- ctl_new_compound_pillar(
-      controller, x[[i]], width,
-      title = sub_title
-    )
     if (is.null(pillar)) {
       # NULL return: doesn't fit
       break
+    }
+
+    if (is.null(width)) {
+      return(list(pillar))
     }
 
     # Compute remaining width
@@ -53,19 +55,25 @@ new_packed_pillars <- function(x, controller, width, title) {
     }
 
     pillars[[i]] <- pillar
+
+    if (!is.null(title)) {
+      title[] <- ""
+    }
   }
 
-  compact(pillars)
+  pillars <- compact(pillars)
+
+  structure(pillars, extra = names(x)[seq2(length(pillars) + 1, length(x))])
 }
 
-new_matrix_pillar <- function(x, controller, width, title) {
+new_matrix_pillar_list <- function(x, controller, width, title, first_pillar = NULL) {
   if (ncol(x) == 0) {
-    return(pillar_from_shaft(
+    return(list(pillar_from_shaft(
       new_pillar_title(prepare_title(title)),
       new_pillar_type(x),
       new_empty_shaft(nrow(x)),
       width
-    ))
+    )))
   }
 
   max_n_pillars <- sum(width %/% 2)
@@ -81,24 +89,34 @@ new_matrix_pillar <- function(x, controller, width, title) {
   ticked_names <- paste0("[,", idx, "]")
 
   for (i in seq_along(ticked_names)) {
-    # FIXME
-    # sub_title <- c(title, ticked_names[[i]])
-    sub_title <- ticked_names[[i]]
-    if (!is.null(title)) {
-      if (i > 1) {
-        title[[length(title)]] <- ""
+    if (i == 1 && !is.null(first_pillar)) {
+      pillar <- first_pillar
+    } else {
+      # FIXME
+      # sub_title <- c(title, ticked_names[[i]])
+      sub_title <- ticked_names[[i]]
+      if (!is.null(title)) {
+        if (i > 1) {
+          title[[length(title)]] <- ""
+        }
+        sub_title <- c(title, sub_title)
       }
-      sub_title <- c(title, sub_title)
+
+      # Call ctl_new_pillar() only for objects that can fit
+      pillar <- ctl_new_pillar(
+        controller, x[, i],
+        width = NULL,
+        title = prepare_title(sub_title)
+      )
     }
 
-    # Call ctl_new_pillar() only for objects that can fit
-    pillar <- ctl_new_pillar(
-      controller, x[, i], width,
-      title = prepare_title(sub_title)
-    )
     if (is.null(pillar)) {
       # NULL return: doesn't fit
       break
+    }
+
+    if (is.null(width)) {
+      return(list(pillar))
     }
 
     # Compute remaining width
@@ -111,44 +129,25 @@ new_matrix_pillar <- function(x, controller, width, title) {
     pillars[[i]] <- pillar
   }
 
-  combine_pillars(compact(pillars))
+  pillars <- compact(pillars)
+  structure(pillars, extra = seq2(length(pillars) + 1, ncol(x)))
 }
 
-new_array_pillar <- function(x, controller, width, title) {
+new_array_pillar_list <- function(x, controller, width, title, first_pillar = NULL) {
+  if (!is.null(first_pillar)) {
+    return(list(first_pillar))
+  }
+
   first_slice <- head(as.vector(x), vec_size(x))
 
   body <- pillar_shaft(first_slice)
 
-  pillar_from_shaft(
+  list(pillar_from_shaft(
     new_pillar_title(title),
     new_pillar_type(x),
     new_continuation_shaft(body),
     width
-  )
-}
-
-combine_pillars <- function(pillars) {
-  "!!!!!DEBUG combine_pillars(`v(length(pillars))`)"
-
-  if (length(pillars) == 0) {
-    return(NULL)
-  }
-
-  components <- names(pillars[[1]])
-
-  t_pillars <- map(set_names(components), function(.x) {
-    out <- map(pillars, function(.y) .y[[.x]])
-    widths <- unlist(map(out, get_cell_widths))
-    min_widths <- unlist(map(out, get_cell_min_widths))
-
-    new_pillar_component(
-      unlist(out, recursive = FALSE),
-      width = widths,
-      min_width = min_widths
-    )
-  })
-
-  new_pillar(t_pillars, class = "compound_pillar")
+  ))
 }
 
 # Can be rewritten with a repeat loop

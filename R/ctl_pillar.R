@@ -74,11 +74,6 @@ pillar_from_shaft <- function(title, type, data, width) {
     return(NULL)
   }
 
-  if (get_min_width(type) > my_width) {
-    "!!!!!DEBUG Early exit, (`v(get_min_width(type))`) > (`v(my_width)`)"
-    return(NULL)
-  }
-
   data_min_width <- get_min_width(data)
   if (data_min_width > my_width) {
     "!!!!!DEBUG Early exit, (`v(get_min_width(data))`) > (`v(my_width)`)"
@@ -87,6 +82,22 @@ pillar_from_shaft <- function(title, type, data, width) {
   data_width <- get_width(data)
 
   data_component <- new_pillar_component(list(data), width = data_width, min_width = data_min_width)
+
+  # The type is taken either from the shaft (e.g. in the case of num() with
+  # common exponents) or from the type provided by the caller
+  shaft_type <- attr(data, "type", exact = TRUE)
+  if (!is.null(shaft_type)) {
+    type <- shaft_type
+  } else {
+    force(type)
+  }
+
+  # Delay querying width of type until it is decided if we take the type_sum
+  # from the data or from the argument provided
+  if (get_min_width(type) > my_width) {
+    "!!!!!DEBUG Early exit, (`v(get_min_width(type))`) > (`v(my_width)`)"
+    return(NULL)
+  }
 
   new_pillar(
     list(
@@ -99,7 +110,8 @@ pillar_from_shaft <- function(title, type, data, width) {
 }
 
 rowidformat2 <- function(data, names, has_star) {
-  out <- map(set_names(names), function(.x) "")
+  empty_component <- pillar_component(set_width("", 0))
+  out <- map(set_names(names), function(.x) empty_component)
 
   if ("type" %in% names) {
     out$type <- pillar_component(rif_type(has_star))
@@ -109,7 +121,7 @@ rowidformat2 <- function(data, names, has_star) {
     out$data <- pillar_component(data)
   }
 
-  new_pillar(out)
+  new_pillar(out, width = get_width(data))
 }
 
 #' Construct a custom pillar object
@@ -124,13 +136,14 @@ rowidformat2 <- function(data, names, has_star) {
 #' @details
 #' Arbitrary components are supported.
 #' If your tibble subclass needs more or different components in its pillars,
-#' override or extend [ctl_new_pillar()]
-#' and perhaps [ctl_new_compound_pillar()].
+#' override or extend [ctl_new_pillar()] and perhaps [ctl_new_pillar_list()].
 #'
 #' @inheritParams ellipsis::dots_empty
 #' @inheritParams pillar
 #' @param components A named list of components constructed with [pillar_component()].
 #' @param class Name of subclass.
+#' @param extra For compound pillars, indicate the names or indices of the
+#'   sub-pillars that could not be shown due to width constraints.
 #'
 #' @export
 #' @examples
@@ -147,7 +160,8 @@ rowidformat2 <- function(data, names, has_star) {
 #'   title = pillar_component(new_ornament(c("abc", "de"), align = "right")),
 #'   lines = new_pillar_component(list(lines("=")), width = 1)
 #' ))
-new_pillar <- function(components, ..., width = NULL, class = NULL) {
+new_pillar <- function(components, ..., width = NULL, class = NULL,
+                       extra = NULL) {
   "!!!!DEBUG new_pillar(`v(width)`, `v(class)`)"
 
   check_dots_empty()
@@ -158,7 +172,8 @@ new_pillar <- function(components, ..., width = NULL, class = NULL) {
   structure(
     components,
     width = width,
-    class = c(class, "pillar")
+    class = c(class, "pillar"),
+    extra = extra
   )
 }
 
@@ -170,28 +185,14 @@ format.pillar <- function(x, width = NULL, ...) {
 
   if (is.null(width)) {
     widths <- pillar_get_widths(x)
-    width <- sum(widths) - length(widths) + 1L
+    width <- sum(widths) + length(widths) - 1L
   }
 
-  new_vertical(pillar_format_parts_2(x, width)$aligned[[1]])
+  as_glue(pillar_format_parts_2(x, width)$aligned)
 }
 
 #' @export
 print.pillar <- function(x, ...) {
   writeLines(style_bold("<pillar>"))
   print(format(x, ...))
-}
-
-#' @export
-print.compound_pillar <- function(x, ...) {
-  len <- length(x[1][[1]])
-  desc <- paste0("<compound_pillar[", len, "]>")
-  writeLines(style_bold(desc))
-  print(format(x, ...))
-
-  if (len > 1) {
-    writeLines(style_subtle(pre_dots(paste0("and ", len - 1, " more sub-pillars"))))
-  }
-
-  invisible(x)
 }

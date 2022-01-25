@@ -10,6 +10,7 @@ new_pillar_shaft(
   ...,
   width = NULL,
   min_width = width,
+  type_sum = NULL,
   class = NULL,
   subclass = NULL
 )
@@ -22,23 +23,30 @@ new_pillar_shaft_simple(
   min_width = NULL,
   na = NULL,
   na_indent = 0L,
-  shorten = c("back", "front", "mid", "abbreviate")
+  shorten = c("back", "front", "mid", "abbreviate"),
+  short_formatted = NULL
 )
 }
 \arguments{
 \item{x}{An object}
 
-\item{...}{Additional attributes.}
+\item{...}{Passed on to \code{\link[=new_pillar_shaft]{new_pillar_shaft()}}.}
 
 \item{width}{The maximum column width.}
 
 \item{min_width}{The minimum allowed column width, \code{width} if omitted.}
 
+\item{type_sum}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Override the type summary displayed at the top of the data.
+This argument, if given, takes precedence over the type summary provided by
+\code{\link[=type_sum]{type_sum()}}.}
+
 \item{class}{The name of the subclass.}
 
 \item{subclass}{Deprecated, pass the \code{class} argument instead.}
 
-\item{formatted}{An object coercible to \link{character}.}
+\item{formatted}{The data to show, an object coercible to \link{character}.}
 
 \item{align}{Alignment of the column.}
 
@@ -54,6 +62,10 @@ new_pillar_shaft_simple(
 \item \code{"mid"}: add an ellipsis in the middle
 \item \code{"abbreviate"}: use \code{\link[=abbreviate]{abbreviate()}}
 }}
+
+\item{short_formatted}{If provided, a character vector of the same length as
+\code{formatted}, to be used when the available width is insufficient to show
+the full output.}
 }
 \description{
 The \code{new_pillar_shaft()} constructor creates objects of the \code{"pillar_shaft"}
@@ -84,5 +96,5 @@ By default, the required width is computed from the natural width of the
 }
 \details{
 The \code{formatted} argument may also contain ANSI escapes to change color
-or other attributes of the text, see \link{crayon}.
+or other attributes of the text, provided e.g. by the \pkg{cli} package.
 }

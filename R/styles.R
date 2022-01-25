@@ -116,7 +116,7 @@ num_colors <- local({
   num_colors <- NULL
   function(forget = FALSE) {
     if (is.null(num_colors) || forget) {
-      num_colors <<- crayon::num_colors(forget = forget)
+      num_colors <<- cli::num_ansi_colors()
     }
     num_colors
   }

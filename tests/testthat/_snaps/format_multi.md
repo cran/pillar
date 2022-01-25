@@ -1,11 +1,7 @@
 # sanity check (1)
 
     Code
-      crayon::has_color()
-    Output
-      [1] FALSE
-    Code
-      crayon::num_colors()
+      cli::num_ansi_colors()
     Output
       [1] 1
     Code
@@ -316,7 +312,7 @@
 ---
 
     Code
-      new_vertical(extra_cols_impl(squeeze_impl(colonnade(x), width = 10)))
+      as_glue(extra_cols_impl(squeeze_impl(colonnade(x), width = 10)))
     Output
       col_02 <chr>
       col_03 <fct>
@@ -325,7 +321,7 @@
 ---
 
     Code
-      new_vertical(extra_cols_impl(squeeze_impl(colonnade(x), width = 20)))
+      as_glue(extra_cols_impl(squeeze_impl(colonnade(x), width = 20)))
     Output
       col_02 <chr>
       col_03 <fct>
@@ -334,7 +330,7 @@
 ---
 
     Code
-      new_vertical(extra_cols_impl(squeeze_impl(colonnade(x), width = 30)))
+      as_glue(extra_cols_impl(squeeze_impl(colonnade(x), width = 30)))
     Output
       col_03 <fct>
       col_04 <ord>
@@ -342,14 +338,14 @@
 ---
 
     Code
-      new_vertical(extra_cols_impl(squeeze_impl(colonnade(x), width = 35)))
+      as_glue(extra_cols_impl(squeeze_impl(colonnade(x), width = 35)))
     Output
       col_04 <ord>
 
 ---
 
     Code
-      new_vertical(extra_cols_impl(squeeze_impl(colonnade(x), width = 40)))
+      as_glue(extra_cols_impl(squeeze_impl(colonnade(x), width = 40)))
 
 # tests from tibble
 
@@ -367,23 +363,23 @@
       7  14.3     8  360    245
       8  24.4     4  147.    62
     Code
-      colonnade(iris[1:5, ], width = 30)
+      colonnade(trees[1:5, ], width = 20)
     Output
-        Sepal.Length Sepal.Width
-               <dbl>       <dbl>
-      1          5.1         3.5
-      2          4.9         3  
-      3          4.7         3.2
-      4          4.6         3.1
-      5          5           3.6
+        Girth Height
+        <dbl>  <dbl>
+      1   8.3     70
+      2   8.6     65
+      3   8.8     63
+      4  10.5     72
+      5  10.7     81
     Code
-      colonnade(iris[1:3, ], width = 20)
+      colonnade(trees[1:3, ], width = 10)
     Output
-        Sepal.Length
-               <dbl>
-      1          5.1
-      2          4.9
-      3          4.7
+        Girth
+        <dbl>
+      1   8.3
+      2   8.6
+      3   8.8
     Code
       colonnade(df_all, width = 30)
     Output
@@ -525,7 +521,9 @@
       2 <list [1]>
       3 <list [1]>
     Code
-      colonnade(list(`\n` = c("\n", "\""), `\r` = factor("\n")), width = 30)
+      list_with_ctl <- list(c("\n", "\""), factor(c("\n", "\n")))
+      names(list_with_ctl) <- c("\n", "\r")
+      colonnade(list_with_ctl, width = 30)
     Output
         `\n`  `\r` 
         <chr> <fct>
@@ -571,274 +569,10 @@
     Code
       # dummy
 
-# color, options: UTF-8 is TRUE
-
-    Code
-      crayon::has_color()
-    Output
-      [1] TRUE
-    Code
-      crayon::num_colors()
-    Output
-      [1] 16
-    Code
-      has_color()
-    Output
-      [1] TRUE
-    Code
-      num_colors()
-    Output
-      [1] 16
-    Code
-      style_na("NA")
-    Output
-      [1] "\033[31mNA\033[39m"
-    Code
-      style_neg("-1")
-    Output
-      [1] "\033[31m-1\033[39m"
-
----
-
-    Code
-      style_na("NA")
-    Output
-      [1] "\033[31mNA\033[39m"
-
----
-
-    Code
-      print(xf)
-    Output
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-    Code
-      with_options(pillar.subtle_num = TRUE, print(xf))
-    Output
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[90m0[39m[90m.[39m[90m00[39m[31m1[39m
-      [90m2[39m     [90m0[39m[90m.[39m[90m0[39m1 
-      [90m3[39m    -[90m0[39m[90m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[90m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m0[90m00[39m    
-      [90m9[39m    [31mNA[39m    
-    Code
-      with_options(pillar.subtle = FALSE, print(xf))
-    Output
-                x
-            [3m<dbl>[23m
-      1    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      2     0.01 
-      3    -[31m0[39m[31m.[39m[31m1[39m  
-      4     1    
-      5   -[31m10[39m    
-      6   100    
-      7 -[31m[4m1[24m00[39m[31m0[39m    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-    Code
-      with_options(pillar.neg = FALSE, print(xf))
-    Output
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -0.001
-      [90m2[39m     0.01 
-      [90m3[39m    -0.1  
-      [90m4[39m     1    
-      [90m5[39m   -10    
-      [90m6[39m   100    
-      [90m7[39m -[4m1[24m000    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-    Code
-      with_options(pillar.subtle = FALSE, pillar.neg = FALSE, print(xf))
-    Output
-                x
-            [3m<dbl>[23m
-      1    -0.001
-      2     0.01 
-      3    -0.1  
-      4     1    
-      5   -10    
-      6   100    
-      7 -[4m1[24m000    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-    Code
-      with_options(pillar.bold = TRUE, print(xf))
-    Output
-                [1mx[22m
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-
----
-
-    Code
-      colonnade(list(a_very_long_column_name = 0), width = 15)
-    Output
-        a_very_long_…
-                [3m[90m<dbl>[39m[23m
-      [90m1[39m             0
-
-# color, options: UTF-8 is FALSE
-
-    Code
-      crayon::has_color()
-    Output
-      [1] TRUE
-    Code
-      crayon::num_colors()
-    Output
-      [1] 16
-    Code
-      has_color()
-    Output
-      [1] TRUE
-    Code
-      num_colors()
-    Output
-      [1] 16
-    Code
-      style_na("NA")
-    Output
-      [1] "\033[31mNA\033[39m"
-    Code
-      style_neg("-1")
-    Output
-      [1] "\033[31m-1\033[39m"
-
----
-
-    Code
-      style_na("NA")
-    Output
-      [1] "\033[31mNA\033[39m"
-
----
-
-    Code
-      print(xf)
-    Output
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-    Code
-      with_options(pillar.subtle_num = TRUE, print(xf))
-    Output
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[90m0[39m[90m.[39m[90m00[39m[31m1[39m
-      [90m2[39m     [90m0[39m[90m.[39m[90m0[39m1 
-      [90m3[39m    -[90m0[39m[90m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[90m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m0[90m00[39m    
-      [90m9[39m    [31mNA[39m    
-    Code
-      with_options(pillar.subtle = FALSE, print(xf))
-    Output
-                x
-            [3m<dbl>[23m
-      1    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      2     0.01 
-      3    -[31m0[39m[31m.[39m[31m1[39m  
-      4     1    
-      5   -[31m10[39m    
-      6   100    
-      7 -[31m[4m1[24m00[39m[31m0[39m    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-    Code
-      with_options(pillar.neg = FALSE, print(xf))
-    Output
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -0.001
-      [90m2[39m     0.01 
-      [90m3[39m    -0.1  
-      [90m4[39m     1    
-      [90m5[39m   -10    
-      [90m6[39m   100    
-      [90m7[39m -[4m1[24m000    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-    Code
-      with_options(pillar.subtle = FALSE, pillar.neg = FALSE, print(xf))
-    Output
-                x
-            [3m<dbl>[23m
-      1    -0.001
-      2     0.01 
-      3    -0.1  
-      4     1    
-      5   -10    
-      6   100    
-      7 -[4m1[24m000    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-    Code
-      with_options(pillar.bold = TRUE, print(xf))
-    Output
-                [1mx[22m
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-
----
-
-    Code
-      colonnade(list(a_very_long_column_name = 0), width = 15)
-    Output
-        a_very_long_~
-                [3m[90m<dbl>[39m[23m
-      [90m1[39m             0
-
 # sanity check (2)
 
     Code
-      crayon::has_color()
-    Output
-      [1] FALSE
-    Code
-      crayon::num_colors()
+      cli::num_ansi_colors()
     Output
       [1] 1
     Code

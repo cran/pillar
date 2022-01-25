@@ -18,7 +18,7 @@
       1 a b c d e f g h i j k l m n o p q r s t u v w x y z
       
       $extra_cols
-      named list()
+      list()
       
 
 # tests from tibble
@@ -62,52 +62,38 @@
       
       
     Code
-      ctl_colonnade(iris[1:5, ], width = 30)
+      ctl_colonnade(trees[1:5, ], width = 20)
     Output
       $body
-        Sepal.Length Sepal.Width
-               <dbl>       <dbl>
-      1          5.1         3.5
-      2          4.9         3  
-      3          4.7         3.2
-      4          4.6         3.1
-      5          5           3.6
+        Girth Height
+        <dbl>  <dbl>
+      1   8.3     70
+      2   8.6     65
+      3   8.8     63
+      4  10.5     72
+      5  10.7     81
       
       $extra_cols
-      $extra_cols$Petal.Length
-      [1] 1.4 1.4 1.3 1.5 1.4
-      
-      $extra_cols$Petal.Width
-      [1] 0.2 0.2 0.2 0.2 0.2
-      
-      $extra_cols$Species
-      [1] setosa setosa setosa setosa setosa
-      Levels: setosa versicolor virginica
+      $extra_cols$Volume
+      [1] 10.3 10.3 10.2 16.4 18.8
       
       
     Code
-      ctl_colonnade(iris[1:3, ], width = 20)
+      ctl_colonnade(trees[1:3, ], width = 10)
     Output
       $body
-        Sepal.Length
-               <dbl>
-      1          5.1
-      2          4.9
-      3          4.7
+        Girth
+        <dbl>
+      1   8.3
+      2   8.6
+      3   8.8
       
       $extra_cols
-      $extra_cols$Sepal.Width
-      [1] 3.5 3.0 3.2
+      $extra_cols$Height
+      [1] 70 65 63
       
-      $extra_cols$Petal.Length
-      [1] 1.4 1.4 1.3
-      
-      $extra_cols$Petal.Width
-      [1] 0.2 0.2 0.2
-      
-      $extra_cols$Species
-      [1] setosa setosa setosa
-      Levels: setosa versicolor virginica
+      $extra_cols$Volume
+      [1] 10.3 10.3 10.2
       
       
     Code
@@ -180,7 +166,7 @@
       3 <list [1]>
       
       $extra_cols
-      named list()
+      list()
       
     Code
       options(width = 70)
@@ -199,7 +185,7 @@
       3 <int [1]> <list [1]>
       
       $extra_cols
-      named list()
+      list()
       
     Code
       options(width = 60)
@@ -218,7 +204,7 @@
       3 NA                  <int [1]> <list [1]>
       
       $extra_cols
-      named list()
+      list()
       
     Code
       options(width = 50)
@@ -237,7 +223,7 @@
       3 NA                  <int [1]> <list [1]>
       
       $extra_cols
-      named list()
+      list()
       
     Code
       options(width = 40)
@@ -261,7 +247,7 @@
       3 <int [1]> <list [1]>
       
       $extra_cols
-      named list()
+      list()
       
     Code
       options(width = 30)
@@ -290,7 +276,7 @@
       3 <int [1]> <list [1]>
       
       $extra_cols
-      named list()
+      list()
       
     Code
       options(width = 20)
@@ -352,7 +338,9 @@
       
       
     Code
-      ctl_colonnade(list(`\n` = c("\n", "\""), `\r` = factor(c("\n", "\n"))), width = 30)
+      list_with_ctl <- list(c("\n", "\""), factor(c("\n", "\n")))
+      names(list_with_ctl) <- c("\n", "\r")
+      ctl_colonnade(list_with_ctl, width = 30)
     Output
       $body
         `\n`  `\r` 
@@ -361,7 +349,7 @@
       2 "\""  "\n" 
       
       $extra_cols
-      named list()
+      list()
       
     Code
       ctl_colonnade(list(a = c("", " ", "a ", " a")), width = 30)
@@ -375,7 +363,7 @@
       4 " a" 
       
       $extra_cols
-      named list()
+      list()
       
     Code
       ctl_colonnade(list(`mean(x)` = 5, `var(x)` = 3), width = 30)
@@ -386,7 +374,7 @@
       1         5        3
       
       $extra_cols
-      named list()
+      list()
       
 
 # NA names
@@ -404,7 +392,7 @@
       3     3     6
       
       $extra_cols
-      named list()
+      list()
       
 
 # sep argument
@@ -420,296 +408,10 @@
       3     3
       
       $extra_cols
-      named list()
+      list()
       
     Code
       # dummy
-
-# color, options: UTF-8 is TRUE
-
-    Code
-      style_na("NA")
-    Output
-      [1] "\033[31mNA\033[39m"
-    Code
-      style_neg("-1")
-    Output
-      [1] "\033[31m-1\033[39m"
-
----
-
-    Code
-      xf <- (function() ctl_colonnade(list(x = c((10^(-3:4)) * c(-1, 1), NA))))
-      print(xf())
-    Output
-      $body
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.subtle_num = TRUE, print(xf()))
-    Output
-      $body
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[90m0[39m[90m.[39m[90m00[39m[31m1[39m
-      [90m2[39m     [90m0[39m[90m.[39m[90m0[39m1 
-      [90m3[39m    -[90m0[39m[90m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[90m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m0[90m00[39m    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.subtle = FALSE, print(xf()))
-    Output
-      $body
-                x
-            [3m<dbl>[23m
-      1    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      2     0.01 
-      3    -[31m0[39m[31m.[39m[31m1[39m  
-      4     1    
-      5   -[31m10[39m    
-      6   100    
-      7 -[31m[4m1[24m00[39m[31m0[39m    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.neg = FALSE, print(xf()))
-    Output
-      $body
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -0.001
-      [90m2[39m     0.01 
-      [90m3[39m    -0.1  
-      [90m4[39m     1    
-      [90m5[39m   -10    
-      [90m6[39m   100    
-      [90m7[39m -[4m1[24m000    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.subtle = FALSE, pillar.neg = FALSE, print(xf()))
-    Output
-      $body
-                x
-            [3m<dbl>[23m
-      1    -0.001
-      2     0.01 
-      3    -0.1  
-      4     1    
-      5   -10    
-      6   100    
-      7 -[4m1[24m000    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.bold = TRUE, print(xf()))
-    Output
-      $body
-                [1mx[22m
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-
----
-
-    Code
-      ctl_colonnade(list(a_very_long_column_name = 0), width = 20)
-    Output
-      $body
-        a_very_long_colum…
-                     [3m[90m<dbl>[39m[23m
-      [90m1[39m                  0
-      
-      $extra_cols
-      named list()
-      
-
-# color, options: UTF-8 is FALSE
-
-    Code
-      style_na("NA")
-    Output
-      [1] "\033[31mNA\033[39m"
-    Code
-      style_neg("-1")
-    Output
-      [1] "\033[31m-1\033[39m"
-
----
-
-    Code
-      xf <- (function() ctl_colonnade(list(x = c((10^(-3:4)) * c(-1, 1), NA))))
-      print(xf())
-    Output
-      $body
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.subtle_num = TRUE, print(xf()))
-    Output
-      $body
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[90m0[39m[90m.[39m[90m00[39m[31m1[39m
-      [90m2[39m     [90m0[39m[90m.[39m[90m0[39m1 
-      [90m3[39m    -[90m0[39m[90m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[90m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m0[90m00[39m    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.subtle = FALSE, print(xf()))
-    Output
-      $body
-                x
-            [3m<dbl>[23m
-      1    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      2     0.01 
-      3    -[31m0[39m[31m.[39m[31m1[39m  
-      4     1    
-      5   -[31m10[39m    
-      6   100    
-      7 -[31m[4m1[24m00[39m[31m0[39m    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.neg = FALSE, print(xf()))
-    Output
-      $body
-                x
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -0.001
-      [90m2[39m     0.01 
-      [90m3[39m    -0.1  
-      [90m4[39m     1    
-      [90m5[39m   -10    
-      [90m6[39m   100    
-      [90m7[39m -[4m1[24m000    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.subtle = FALSE, pillar.neg = FALSE, print(xf()))
-    Output
-      $body
-                x
-            [3m<dbl>[23m
-      1    -0.001
-      2     0.01 
-      3    -0.1  
-      4     1    
-      5   -10    
-      6   100    
-      7 -[4m1[24m000    
-      8 [4m1[24m[4m0[24m000    
-      9    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-    Code
-      with_options(pillar.bold = TRUE, print(xf()))
-    Output
-      $body
-                [1mx[22m
-            [3m[90m<dbl>[39m[23m
-      [90m1[39m    -[31m0[39m[31m.[39m[31m00[39m[31m1[39m
-      [90m2[39m     0.01 
-      [90m3[39m    -[31m0[39m[31m.[39m[31m1[39m  
-      [90m4[39m     1    
-      [90m5[39m   -[31m10[39m    
-      [90m6[39m   100    
-      [90m7[39m -[31m[4m1[24m00[39m[31m0[39m    
-      [90m8[39m [4m1[24m[4m0[24m000    
-      [90m9[39m    [31mNA[39m    
-      
-      $extra_cols
-      named list()
-      
-
----
-
-    Code
-      ctl_colonnade(list(a_very_long_column_name = 0), width = 20)
-    Output
-      $body
-        a_very_long_colum~
-                     [3m[90m<dbl>[39m[23m
-      [90m1[39m                  0
-      
-      $extra_cols
-      named list()
-      
 
 # tibble columns
 
@@ -724,7 +426,7 @@
       3     3     6     9
       
       $extra_cols
-      named list()
+      list()
       
 
 # tibble columns (nested)
@@ -733,14 +435,14 @@
       ctl_colonnade(x, width = 40)
     Output
       $body
-            a   b$c    $d  $e$f   $$g
-        <int> <int> <int> <int> <int>
-      1     1     4     7    10    13
-      2     2     5     8    11    14
-      3     3     6     9    12    15
+            a   b$c    $d $e$f$g  $$$h
+        <int> <int> <int>  <int> <int>
+      1     1     4     7     10    13
+      2     2     5     8     11    14
+      3     3     6     9     12    15
       
       $extra_cols
-      named list()
+      list()
       
 
 # tibble columns (empty)
@@ -756,7 +458,7 @@
       3     3     6     9             12
       
       $extra_cols
-      named list()
+      list()
       
 
 # matrix columns (unnamed)
@@ -772,7 +474,7 @@
       3     3     6     9
       
       $extra_cols
-      named list()
+      list()
       
 
 # matrix columns (named)
@@ -788,7 +490,7 @@
       3     3       6      9
       
       $extra_cols
-      named list()
+      list()
       
 
 # matrix columns (empty)
@@ -804,7 +506,7 @@
       3     3               6
       
       $extra_cols
-      named list()
+      list()
       
 
 # filling unused width (#331)

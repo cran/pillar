@@ -23,11 +23,17 @@
 #' @param ... Additional attributes.
 #' @param width The maximum column width.
 #' @param min_width The minimum allowed column width, `width` if omitted.
+#' @param type_sum `r lifecycle::badge("experimental")`
+#'
+#'   Override the type summary displayed at the top of the data.
+#'   This argument, if given, takes precedence over the type summary provided by
+#'   [type_sum()].
 #' @param class The name of the subclass.
 #' @param subclass Deprecated, pass the `class` argument instead.
 #' @name new_pillar_shaft
 #' @export
-new_pillar_shaft <- function(x, ..., width = NULL, min_width = width, class = NULL, subclass = NULL) {
+new_pillar_shaft <- function(x, ..., width = NULL, min_width = width,
+                             type_sum = NULL, class = NULL, subclass = NULL) {
   if (!is.null(subclass)) {
     deprecate_soft("1.4.0", "pillar::new_pillar_shaft(subclass = )", "new_pillar_shaft(class = )")
     class <- subclass
@@ -40,6 +46,7 @@ new_pillar_shaft <- function(x, ..., width = NULL, min_width = width, class = NU
   ret <- structure(
     x,
     ...,
+    type = if (!is.null(type_sum)) new_pillar_type_obj(type_sum),
     class = c(class, "pillar_shaft")
   )
   ret <- set_width(ret, width)
@@ -123,7 +130,10 @@ pillar_shaft.numeric <- function(x, ..., sigfig = NULL) {
     return(new_pillar_shaft_simple(ret, width = get_max_extent(ret), align = "left"))
   }
 
-  data <- unclass(x)
+  pillar_shaft_number_attr(unclass(x), pillar_attr, sigfig)
+}
+
+pillar_shaft_number_attr <- function(data, pillar_attr, sigfig = NULL) {
   scale <- pillar_attr$scale
   if (!is.null(scale)) {
     data <- data * scale
@@ -197,35 +207,52 @@ pillar_shaft_number <- function(x, sigfig, digits, notation, fixed_exponent, ext
   ret$dec <- dec
   ret$sci <- sci
 
+  if (!is.null(ret$sci$unit) && ret$sci$unit != 0) {
+    type_sum <- I(paste0(
+      # Turn off subtle styling for units
+      sub(" ", "", style_subtle(" ")),
+      "[",
+      format_exp(ret$sci$unit, (notation == "si")),
+      "]"
+    ))
+  } else {
+    type_sum <- NULL
+  }
+
   new_pillar_shaft(
     ret,
     width = get_width(ret$dec %||% ret$sci),
     min_width = min(get_min_widths(ret)),
+    type_sum = type_sum,
     class = "pillar_shaft_decimal"
   )
 }
 
-# registered in .onLoad()
+#' @export
 pillar_shaft.integer64 <- function(x, ..., sigfig = NULL) {
+  if (class(x)[[1]] != "integer64") {
+    return(NextMethod())
+  }
+
   pillar_shaft_number(x, sigfig, digits = NULL, notation = NULL, fixed_exponent = NULL, extra_sigfig = NULL)
 }
 
-# registered in .onLoad()
+#' @export
 pillar_shaft.Surv <- function(x, ...) {
   new_pillar_shaft_simple(format(x), align = "right")
 }
 
-# registered in .onLoad()
+#' @export
 pillar_shaft.Surv2 <- function(x, ...) {
   new_pillar_shaft_simple(format(x), align = "right")
 }
 
-# registered in .onLoad()
+#' @export
 type_sum.Surv <- function(x) {
   "Surv"
 }
 
-# registered in .onLoad()
+#' @export
 type_sum.Surv2 <- function(x) {
   "Surv2"
 }
@@ -284,13 +311,13 @@ pillar_shaft.character <- function(x, ..., min_width = NULL) {
     min_chars <- get_pillar_option_min_chars()
   }
 
-  pillar_shaft(new_vertical(out), ..., min_width = min_chars, na_indent = na_indent, shorten = pillar_attr$shorten)
+  pillar_shaft(as_glue(out), ..., min_width = min_chars, na_indent = na_indent, shorten = pillar_attr$shorten)
 }
 
 #' @export
 #' @inheritParams new_pillar_shaft_simple
 #' @rdname pillar_shaft
-pillar_shaft.pillar_vertical <- function(x, ..., min_width = NULL, na_indent = 0L, shorten = NULL) {
+pillar_shaft.glue <- function(x, ..., min_width = NULL, na_indent = 0L, shorten = NULL) {
   min_width <- max(min_width, 3L)
   width <- get_max_extent(x)
 
@@ -306,11 +333,25 @@ pillar_shaft.pillar_vertical <- function(x, ..., min_width = NULL, na_indent = 0
 #' @export
 #' @rdname pillar_shaft
 pillar_shaft.list <- function(x, ...) {
-  out <- paste0("<", map_chr(x, obj_sum), ">")
+  summary <- map(x, obj_sum)
 
-  width <- get_max_extent(out)
+  formatted <- paste0("<", unlist(summary), ">")
 
-  new_pillar_shaft_simple(style_list(out), width = width, align = "left", min_width = min(width, 3L))
+  short <- map(summary, attr, "short")
+  short_idx <- !map_lgl(short, is.null)
+  short_formatted <- formatted
+  short_formatted[short_idx] <- paste0("<", unlist(short[short_idx]), ">")
+
+  width <- get_max_extent(formatted)
+  min_width <- get_max_extent(short_formatted)
+
+  new_pillar_shaft_simple(
+    style_list(formatted),
+    width = width,
+    align = "left",
+    min_width = min_width,
+    short_formatted = short_formatted
+  )
 }
 
 #' @export
@@ -331,5 +372,5 @@ pillar_shaft.default <- function(x, ...) {
   #' @details
   #' The default method will currently format via [format()],
   #' but you should not rely on this behavior.
-  pillar_shaft(new_vertical(format(x)), ...)
+  pillar_shaft(as_glue(format(x)), ...)
 }

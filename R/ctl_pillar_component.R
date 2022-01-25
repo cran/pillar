@@ -29,9 +29,9 @@ new_pillar_component <- function(x, ..., width, min_width = NULL) {
 
   check_dots_empty()
   stopifnot(rlang::is_bare_list(x))
-  stopifnot(is_integerish(width), length(width) == length(x))
+  stopifnot(is_integerish(width), length(width) == 1L)
   if (!is.null(min_width)) {
-    stopifnot(is_integerish(min_width), length(min_width) == length(x))
+    stopifnot(is_integerish(min_width), length(min_width) == 1L)
   }
 
   structure(
@@ -50,68 +50,32 @@ new_pillar_component <- function(x, ..., width, min_width = NULL) {
 #' @export
 #' @rdname new_pillar_component
 pillar_component <- function(x) {
+  # FIXME: No longer need to wrap in a list, cell concept abandoned
   new_pillar_component(list(x), width = get_width(x), min_width = get_min_width(x))
 }
 
-get_cell_widths <- function(x) {
-  # FIXME: Choose different name to avoid confusion with get_width()?
-  attr(x, "width", exact = TRUE)
-}
-
-get_cell_min_widths <- function(x) {
-  attr(x, "min_width", exact = TRUE) %||% attr(x, "width", exact = TRUE)
-}
-
-get_sub_pillar <- function(x, i) {
-  new_pillar(map(x, get_cells, i, i))
-}
-
-get_cells <- function(x, from, to) {
-  stopifnot(from <= to)
-
-  if (length(x) < length(get_cell_widths(x))) {
-    get_cells_for_hierarchy(x, from, to)
-  } else {
-    idx <- seq2(from, to)
-    new_pillar_component(
-      x[idx],
-      width = get_cell_widths(x)[idx],
-      min_width = get_cell_min_widths(x)[idx]
-    )
-  }
-}
-
-get_cells_for_hierarchy <- function(x, from, to) {
-  lengths <- map_int(x, function(.x) length(get_cell_widths(.x)))
-
-  idx <- .bincode(c(from, to), lengths)
-  from_idx <- idx[[1]]
-  to_idx <- idx[[2]]
-
-  # FIXME
-  abort("NYI: get_cells_for_hierarchy()")
-}
-
 pillar_get_widths <- function(x) {
-  exec(pmax, !!!map(x, get_cell_widths))
+  as.integer(exec(max, !!!map(x, get_width)))
 }
 
 pillar_get_min_widths <- function(x) {
-  exec(pmax, !!!map(x, get_cell_min_widths))
+  as.integer(exec(max, !!!map(x, get_min_width)))
 }
 
 pillar_format_parts_2 <- function(x, width) {
-  # Code is repeated in ctl_colonnade
-  formatted <- map(x, function(.x) format(.x[[1]], width = width))
+  widths <- pillar_get_widths(x)
+  formatted <- map(x, function(.x) format(.x[[1L]], width = width))
 
   align <- attr(formatted[["data"]], "align", exact = TRUE) %||% "left"
 
   flat <- unlist(formatted)
   extent <- get_extent(flat)
-  aligned <- align_impl(flat, min(width, max(extent)), align, " ", extent)
+  max_extent <- max(extent)
+  if (max_extent > width) {
+    flat <- str_trunc(flat, width)
+    max_extent <- width
+  }
+  aligned <- align_impl(flat, max_extent, align, " ", extent)
 
-  new_tbl(list(
-    formatted = list(formatted), align = align, flat = list(flat),
-    max_extent = max(extent), aligned = list(aligned)
-  ))
+  list(max_extent = max_extent, aligned = aligned, components = names(x))
 }

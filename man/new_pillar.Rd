@@ -4,7 +4,7 @@
 \alias{new_pillar}
 \title{Construct a custom pillar object}
 \usage{
-new_pillar(components, ..., width = NULL, class = NULL)
+new_pillar(components, ..., width = NULL, class = NULL, extra = NULL)
 }
 \arguments{
 \item{components}{A named list of components constructed with \code{\link[=pillar_component]{pillar_component()}}.}
@@ -14,6 +14,9 @@ new_pillar(components, ..., width = NULL, class = NULL)
 \item{width}{Default width, optional.}
 
 \item{class}{Name of subclass.}
+
+\item{extra}{For compound pillars, indicate the names or indices of the
+sub-pillars that could not be shown due to width constraints.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
@@ -25,8 +28,7 @@ See \code{\link[=pillar]{pillar()}} for the high-level constructor with default 
 \details{
 Arbitrary components are supported.
 If your tibble subclass needs more or different components in its pillars,
-override or extend \code{\link[=ctl_new_pillar]{ctl_new_pillar()}}
-and perhaps \code{\link[=ctl_new_compound_pillar]{ctl_new_compound_pillar()}}.
+override or extend \code{\link[=ctl_new_pillar]{ctl_new_pillar()}} and perhaps \code{\link[=ctl_new_pillar_list]{ctl_new_pillar_list()}}.
 }
 \examples{
 lines <- function(char = "-") {
