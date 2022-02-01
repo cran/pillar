@@ -6,21 +6,13 @@ ctl_colonnade <- function(x, has_row_id = TRUE, width = NULL,
   x <- new_data_frame(x, names = names2(x))
   width <- get_width_print(width)
 
+  stopifnot(all(focus %in% names(x)))
+
   n <- nrow(x)
   nc <- ncol(x)
 
   if (n == 0 || nc == 0) {
-    return(new_colonnade_body(list(), extra_cols = x))
-  }
-
-  # Move focus columns to front
-  x_focus <- x
-  if (!is.null(focus)) {
-    focus <- match(focus, names(x))
-    stopifnot(!anyNA(focus))
-    idx <- seq_along(x)
-    idx <- c(focus, setdiff(idx, focus))
-    x_focus <- x[idx]
+    return(new_colonnade_body(list(), extra_cols = x, abbrev_cols = character()))
   }
 
   # Reserve space for rowid column in each tier
@@ -39,23 +31,18 @@ ctl_colonnade <- function(x, has_row_id = TRUE, width = NULL,
 
   formatted_tiers <- list()
   extra_cols <- list(a = 1)[0]
-  split_after <- NULL
+  last_abbrev_title <- NULL
+  abbrev_cols <- character()
 
   on_tier <- function(formatted) {
     # writeLines(formatted)
     formatted_tiers <<- c(formatted_tiers, list(formatted))
   }
 
-  on_hsep <- function(extent) {
-    if (!is.null(focus)) {
-      split_after <<- length(formatted_tiers)
-    }
-  }
-
   on_extra_cols <- function(my_extra_cols) {
     # print(extra_cols)
 
-    out <- pmap(my_extra_cols, function(x, title, cols) {
+    new_extra_cols <- pmap(my_extra_cols, function(x, title, cols) {
       out <- as.list(x)[cols]
       if (is.null(title)) {
         return(out)
@@ -73,76 +60,76 @@ ctl_colonnade <- function(x, has_row_id = TRUE, width = NULL,
       out
     })
 
-    extra_cols <<- unlist(out, recursive = FALSE)
+    # Called at most once:
+    stopifnot(length(extra_cols) == 0)
+    extra_cols <<- unlist(new_extra_cols, recursive = FALSE)
+  }
+
+  on_abbrev_col <- function(title) {
+    my_title <- title
+    my_last_abbrev_title <- last_abbrev_title
+    if (length(my_title) < length(my_last_abbrev_title)) {
+      length(my_last_abbrev_title) <- length(my_title)
+    } else {
+      length(my_title) <- length(my_last_abbrev_title)
+    }
+
+    my_full_title <- title
+    my_full_title[which(my_title == my_last_abbrev_title)] <- ""
+
+    cols <- paste0(my_full_title, collapse = "$")
+
+    abbrev_cols <<- c(abbrev_cols, cols)
+
+    last_abbrev_title <<- title
   }
 
   cb <- new_emit_tiers_callbacks(
     controller, rowid, rowid_width, has_star,
-    on_tier, on_hsep, on_extra_cols
+    on_tier, on_extra_cols, on_abbrev_col
   )
-  do_emit_tiers(x_focus, tier_widths, length(focus), cb)
 
-  new_colonnade_body(formatted_tiers, split_after = split_after, extra_cols = extra_cols)
+  # Side effect: populate formatted_tiers, extra_cols, and abbrev_cols
+  do_emit_tiers(x, tier_widths, length(focus), cb, focus)
+
+  new_colonnade_body(formatted_tiers, extra_cols, abbrev_cols)
 }
 
 new_emit_tiers_callbacks <- function(controller, rowid, rowid_width, has_star,
-                                     on_tier, on_hsep, on_extra_cols) {
+                                     on_tier, on_extra_cols, on_abbrev_col) {
   list(
     controller = controller,
     rowid = rowid,
     rowid_width = rowid_width,
     has_star = has_star,
     on_tier = on_tier,
-    on_hsep = on_hsep,
-    on_extra_cols = on_extra_cols
+    on_extra_cols = on_extra_cols,
+    on_abbrev_col = on_abbrev_col
   )
 }
 
-do_emit_tiers <- function(x, tier_widths, n_focus, cb) {
+do_emit_tiers <- function(x, tier_widths, n_focus, cb, focus) {
   formatted_list <- NULL
   extra_cols <- data_frame(x = list(), title = list(), cols = list())
-  n_top_level_pillars <- 0L
-  n_top_level_pillars_at_start <- NULL
-  n_top_level_pillars_at_end <- NULL
-  vsep_pos <- NULL
 
   on_start_tier <- function() {
     # message("on_start_tier()")
     formatted_list <<- list()
-    n_top_level_pillars_at_start <<- n_top_level_pillars
-    vsep_pos <<- NULL
   }
 
   on_end_tier <- function() {
     # message("on_end_tier()")
-    n_top_level_pillars_at_end <<- n_top_level_pillars
-
     if (length(formatted_list) > 0) {
       if (!is.null(cb$rowid)) {
         rowid_pillar <- rowidformat2(cb$rowid, formatted_list[[1]]$components, has_star = cb$has_star)
         formatted_list <- c(list(pillar_format_parts_2(rowid_pillar, cb$rowid_width)), formatted_list)
-        if (!is.null(vsep_pos)) {
-          vsep_pos <<- vsep_pos + 1L
-        }
       }
 
       aligned <- map(formatted_list, `[[`, "aligned")
 
-      if (!is.null(vsep_pos) && vsep_pos < length(aligned)) {
-        vsep <- rep_along(aligned, " ")
-        vsep[[length(aligned)]] <- ""
-        vsep[[vsep_pos]] <- style_subtle(vbar())
-      } else {
-        vsep <- NULL
-      }
-
-      tier <- format_colonnade_tier_2(aligned, vsep = vsep, bidi = get_pillar_option_bidi())
+      tier <- format_colonnade_tier_2(aligned, bidi = get_pillar_option_bidi())
 
       cb$on_tier(tier)
-
-      if (!is.null(vsep_pos) && vsep_pos == length(aligned)) {
-        cb$on_hsep(get_extent(tier[[1]]))
-      }
     }
     formatted_list <<- NULL
   }
@@ -154,13 +141,6 @@ do_emit_tiers <- function(x, tier_widths, n_focus, cb) {
     formatted_list <<- c(formatted_list, list(formatted))
   }
 
-  on_top_level_pillar <- function() {
-    n_top_level_pillars <<- n_top_level_pillars + 1L
-    if (!is.null(n_focus) && n_top_level_pillars == n_focus) {
-      vsep_pos <<- length(formatted_list)
-    }
-  }
-
   on_extra_cols <- function(x, title, cols) {
     # message("extra_cols()")
     # print(title)
@@ -168,23 +148,25 @@ do_emit_tiers <- function(x, tier_widths, n_focus, cb) {
     new_extra_cols <- data_frame(
       x = list(x), title = list(title), cols = list(cols)
     )
-    # Add to the front, because top-level columns are emitted first:
-    extra_cols <<- vec_rbind(new_extra_cols, extra_cols)
+    # Add to the back, extra columns are emitted in order:
+    extra_cols <<- vec_rbind(extra_cols, new_extra_cols)
   }
 
   cb_pillars <- new_emit_pillars_callbacks(
     cb$controller,
-    on_start_tier, on_end_tier, on_pillar, on_top_level_pillar, on_extra_cols
+    on_start_tier = on_start_tier,
+    on_end_tier = on_end_tier,
+    on_pillar = on_pillar,
+    on_top_level_pillar = function(...) {},
+    on_extra_cols = on_extra_cols,
+    on_abbrev_col = cb$on_abbrev_col
   )
 
-  emit_pillars(x, tier_widths, cb_pillars)
-  cb$on_extra_cols(extra_cols)
-}
+  # Side effect: populate `extra_cols`,
+  # aggregate and forward calls to higher-level callbacks in `cb`
+  emit_pillars(x, tier_widths, cb_pillars, focus)
 
-emit_pillars <- function(x, tier_widths, cb) {
-  cb$on_start_tier()
-  do_emit_pillars(x, tier_widths, cb)
-  cb$on_end_tier()
+  cb$on_extra_cols(extra_cols)
 }
 
 new_emit_pillars_callbacks <- function(controller,
@@ -192,18 +174,191 @@ new_emit_pillars_callbacks <- function(controller,
                                        on_end_tier,
                                        on_pillar,
                                        on_top_level_pillar,
-                                       on_extra_cols) {
+                                       on_extra_cols,
+                                       on_abbrev_col) {
   list(
     controller = controller,
     on_start_tier = on_start_tier,
     on_end_tier = on_end_tier,
     on_pillar = on_pillar,
     on_top_level_pillar = on_top_level_pillar,
-    on_extra_cols = on_extra_cols
+    on_extra_cols = on_extra_cols,
+    on_abbrev_col = on_abbrev_col
   )
 }
 
-do_emit_pillars <- function(x, tier_widths, cb, title = NULL, first_pillar = NULL, parent_col_idx = NULL) {
+emit_pillars <- function(x, tier_widths, cb, focus) {
+  cb$on_start_tier()
+  do_emit_focus_pillars(x, tier_widths, cb, focus)
+  cb$on_end_tier()
+}
+
+do_emit_focus_pillars <- function(x, tier_widths, cb, focus) {
+  stopifnot(is.data.frame(x))
+
+  focus <- sort(match(focus, names(x)))
+  # Shortcut
+  if (length(focus) == 0) {
+    do_emit_pillars(x, tier_widths, cb)
+    return()
+  }
+
+  focus_formatted_list <- list()
+  focus_top_level_end_idx <- integer()
+  focus_extra_cols <- list()
+
+  on_focus_pillar <- function(formatted) {
+    # message("pillar()")
+    # print(formatted)
+    # print(pillar, width = width)
+    focus_formatted_list <<- c(focus_formatted_list, list(formatted))
+  }
+
+  on_focus_top_level_pillar <- function() {
+    focus_top_level_end_idx <<- c(focus_top_level_end_idx, length(focus_formatted_list))
+  }
+
+  on_focus_extra_cols <- function(x, title, cols) {
+    # message("extra_cols()")
+    # print(title)
+    # print(cols)
+    new_extra_cols <- data_frame(x = list(x), title = list(title), cols = list(cols))
+    n_focus_formatted_list <- length(focus_formatted_list)
+
+    if (n_focus_formatted_list <= length(focus_extra_cols)) {
+      focus_extra_cols[[n_focus_formatted_list]] <<- vec_rbind(focus_extra_cols[[n_focus_formatted_list]], new_extra_cols)
+    } else {
+      focus_extra_cols[[n_focus_formatted_list]] <<- new_extra_cols
+    }
+  }
+
+  cb_focus <- new_emit_pillars_callbacks(
+    controller = cb$controller,
+    on_start_tier = function(...) {},
+    on_end_tier = function(...) {},
+    on_pillar = on_focus_pillar,
+    on_top_level_pillar = on_focus_top_level_pillar,
+    on_extra_cols = on_focus_extra_cols,
+    on_abbrev_col = cb$on_abbrev_col
+  )
+
+  # Side effect: populates focus_formatted_list and focus_extra_cols
+  do_emit_pillars(x[focus], tier_widths, cb_focus, is_focus = TRUE)
+
+  # Can't show focus pillars that don't fit, but need to iterate
+  # to emit extra columns in the correct order
+  length(focus_extra_cols) <- length(focus)
+  n_focus_shown <- length(focus_top_level_end_idx)
+
+  before_start_idx <- vec_lag(focus + 1L, default = 1L)
+  before_end_idx <- focus - 1L
+
+  focus_top_level_start_idx <- vec_lag(focus_top_level_end_idx + 1L, default = 1L)
+
+  # Apply similar strategy as in do_emit_pillars(), but ensure that
+  # focus pillars are shown
+  widths_focus <- map_int(focus_formatted_list, `[[`, "max_extent")
+  rev <- distribute_pillars_rev(widths_focus, tier_widths)
+  stopifnot(!anyNA(rev$tier))
+
+  # This indicates the limit until which we expand non-focus column
+  # before the current focus column:
+  rev$offset_before <- pmax(rev$offset_after - rev$width - 1L, 0L)
+  rev_before <- rev[focus_top_level_start_idx, ]
+  stopifnot(nrow(rev_before) == n_focus_shown)
+
+  # This indicates how far the current focus column (with all sub-pillars)
+  # can extend. We use it for convenience to use the same logic as
+  # do_emit_pillars().
+  rev_after <- rev[focus_top_level_end_idx, ]
+  stopifnot(nrow(rev_after) == n_focus_shown)
+
+  x_pos <- 0L
+  tier_pos <- 1L
+
+  for (col in seq_along(focus)) {
+    # Emit extra columns for focus pillars before processing non-focus pillars,
+    # to keep extra columns in order between focus and non-focus pillars:
+    my_extra_cols <- focus_extra_cols[[col]]
+    for (extra_cols_row in seq_len(NROW(my_extra_cols))) {
+      cb$on_extra_cols(
+        my_extra_cols$x[[extra_cols_row]],
+        my_extra_cols$title[[extra_cols_row]],
+        my_extra_cols$cols[[extra_cols_row]]
+      )
+    }
+
+    start <- before_start_idx[[col]]
+    end <- before_end_idx[[col]]
+
+    # Emit non-focus pillars that fit: use offset_before
+    if (start <= end) {
+      sub_tier_widths <- compute_sub_tier_widths(
+        tier_widths, x_pos, tier_pos,
+        rev_before$offset_before[[col]], rev_before$tier[[col]]
+      )
+
+      adv <- advance_emit_pillars(x_pos, tier_pos, x[seq2(start, end)], sub_tier_widths, cb)
+      x_pos <- adv$x_pos
+      tier_pos <- adv$tier_pos
+    }
+
+    # Emit already formatted focus pillar(s):
+    if (col <= length(focus_top_level_start_idx)) {
+      focus_pillars <- seq2(focus_top_level_start_idx[[col]], focus_top_level_end_idx[[col]])
+    } else {
+      focus_pillars <- integer()
+    }
+
+    for (focus_pillar in focus_pillars) {
+      # Deduct widths: use offset_after
+      sub_tier_widths <- compute_sub_tier_widths(
+        tier_widths, x_pos, tier_pos,
+        rev_after$offset_after[[col]], rev_after$tier[[col]]
+      )
+
+      used <- compute_used_width(sub_tier_widths, widths_focus[[focus_pillar]])
+
+      if (used$tiers > 0) {
+        cb$on_end_tier()
+        cb$on_start_tier()
+      }
+
+      cb$on_pillar(focus_formatted_list[[focus_pillar]])
+
+      adv <- advance_pos(x_pos, tier_pos, used)
+      x_pos <- adv$x_pos
+      tier_pos <- adv$tier_pos
+    }
+  }
+
+  # Emit pillars after focus pillar
+  if (length(focus) > 0) {
+    start <- focus[[length(focus)]] + 1L
+  } else {
+    start <- 1L
+  }
+  end <- length(x)
+
+  # Emit non-focus pillars that fit: use offset_before
+  if (start <= end) {
+    sub_tier_widths <- compute_sub_tier_widths(
+      tier_widths, x_pos, tier_pos,
+      tier_widths[[length(tier_widths)]], length(tier_widths)
+    )
+
+    adv <- advance_emit_pillars(x_pos, tier_pos, x[seq2(start, end)], sub_tier_widths, cb)
+    x_pos <- adv$x_pos
+    tier_pos <- adv$tier_pos
+  }
+}
+
+advance_emit_pillars <- function(x_pos, tier_pos, ...) {
+  used <- do_emit_pillars(...)
+  advance_pos(x_pos, tier_pos, used)
+}
+
+do_emit_pillars <- function(x, tier_widths, cb, title = NULL, first_pillar = NULL, parent_col_idx = NULL, is_focus = FALSE) {
   top_level <- is.null(first_pillar)
 
   # Only tweaking sub-title, because full title is needed for extra-cols
@@ -217,59 +372,37 @@ do_emit_pillars <- function(x, tier_widths, cb, title = NULL, first_pillar = NUL
   # Extra columns are known early on, and remain fixed
   extra <- attr(pillar_list, "extra")
 
-  # We emit early, this means that top-level columns are emitted before
-  # nested columns. We reverse in the callback.
-  if (length(extra) > 0) {
-    if (is.numeric(extra)) {
-      if (length(extra) == 1) {
-        extra <- paste0("[", extra, "]")
-      } else {
-        extra <- paste0("[", min(extra), ":", max(extra), "]")
-      }
-      x_extra <- set_names(list(x[1, ]), extra)
-    } else {
-      extra <- tick_if_needed(extra)
-      x_extra <- tick_names_if_needed(x)
-    }
-
-    cb$on_extra_cols(x_extra, title, extra)
-  }
-
   if (length(pillar_list) == 0) {
+    emit_extra_cols(extra, x, title, cb)
     # Doesn't fit
     return(NULL)
   }
 
   # Simple pillar: fit and proceed
-  if (!is.null(first_pillar)) {
-    # Harmonize for the case of a zero-column packed column
-    attr(first_pillar, "width") <- attr(pillar_list[[1]], "width")
-  }
-
-  if (identical(list(first_pillar), pillar_list)) {
+  if (isTRUE(attr(pillar_list, "simple"))) {
     pillar <- pillar_list[[1]]
     width <- pillar_get_widths(pillar)
-    if (width <= max(tier_widths)) {
-      # Handle tier break
-      used_tier <- which(width <= tier_widths)[[1]]
-    } else {
-      used_tier <- which.max(tier_widths)
-      width <- tier_widths[[used_tier]]
-    }
 
-    if (used_tier > 1) {
+    title_width <- get_width(pillar[["title"]]) %||% 0L
+
+    formatted <- pillar_format_parts_2(pillar, max(tier_widths), is_focus)
+    true_width <- formatted$max_extent
+    stopifnot(true_width <= max(tier_widths))
+
+    used <- compute_used_width(tier_widths, true_width)
+
+    if (used$tiers > 0) {
       cb$on_end_tier()
       cb$on_start_tier()
     }
 
-    formatted <- pillar_format_parts_2(pillar, width)
     cb$on_pillar(formatted)
 
-    # Use true width
-    true_width <- formatted$max_extent
-    stopifnot(true_width <= width)
+    if (true_width < title_width) {
+      cb$on_abbrev_col(title)
+    }
 
-    return(list(tiers = used_tier - 1L, width = true_width))
+    return(used)
   }
 
   # We can proceed cautiously to the next level if space permits.
@@ -285,21 +418,10 @@ do_emit_pillars <- function(x, tier_widths, cb, title = NULL, first_pillar = NUL
 
   # Advance column by column
   for (col in seq_along(pillar_list)) {
-    target_tier <- rev$tier[[col]]
-    stopifnot(tier_pos <= target_tier)
-    if (tier_pos == target_tier) {
-      sub_tier_widths <- rev$offset_after[[col]] - x_pos
-    } else {
-      sub_tier_widths <- c(
-        tier_widths[[tier_pos]] - x_pos,
-        tier_widths[seq2(tier_pos + 1L, target_tier - 1L)],
-        rev$offset_after[[col]]
-      )
-    }
-    if (x_pos > 0) {
-      sub_tier_widths[[1]] <- max(sub_tier_widths[[1]] - 1L, 0L)
-    }
-    stopifnot(sub_tier_widths >= 0)
+    sub_tier_widths <- compute_sub_tier_widths(
+      tier_widths, x_pos, tier_pos,
+      rev$offset_after[[col]], rev$tier[[col]]
+    )
     "!!!!!DEBUG sub_tier_widths"
 
     # Recurse
@@ -309,12 +431,59 @@ do_emit_pillars <- function(x, tier_widths, cb, title = NULL, first_pillar = NUL
       cb,
       c(title, tick_if_needed(names(x)[[col]])),
       pillar_list[[col]],
-      c(parent_col_idx, if (!is.null(names(x))) col)
+      c(parent_col_idx, if (!is.null(names(x))) col),
+      is_focus
     )
     "!!!!!DEBUG used"
 
-    stopifnot(!is.null(used))
+    adv <- advance_pos(x_pos, tier_pos, used)
+    x_pos <- adv$x_pos
+    tier_pos <- adv$tier_pos
 
+    if (top_level) {
+      cb$on_top_level_pillar()
+    }
+  }
+
+  # We emit late to ensure that extra columns of compound pillars
+  # appear before top-level extra columns.
+  emit_extra_cols(extra, x, title, cb)
+
+  list(tiers = tier_pos - 1L, width = x_pos)
+}
+
+compute_used_width <- function(tier_widths, width) {
+  if (width <= max(tier_widths)) {
+    # Handle tier break
+    used_tier <- which(width <= tier_widths)[[1]]
+  } else {
+    used_tier <- which.max(tier_widths)
+    width <- tier_widths[[used_tier]]
+  }
+  list(tiers = used_tier - 1L, width = width)
+}
+
+compute_sub_tier_widths <- function(tier_widths, x_pos, tier_pos, x_target, tier_target) {
+  stopifnot(tier_pos <= tier_target)
+
+  if (tier_pos == tier_target) {
+    sub_tier_widths <- x_target - x_pos
+  } else {
+    sub_tier_widths <- c(
+      tier_widths[[tier_pos]] - x_pos,
+      tier_widths[seq2(tier_pos + 1L, tier_target - 1L)],
+      x_target
+    )
+  }
+  if (x_pos > 0) {
+    sub_tier_widths[[1]] <- max(sub_tier_widths[[1]] - 1L, 0L)
+  }
+  stopifnot(sub_tier_widths >= 0)
+  sub_tier_widths
+}
+
+advance_pos <- function(x_pos, tier_pos, used) {
+  if (!is.null(used)) {
     if (used$tiers > 0) {
       x_pos <- used$width
       tier_pos <- tier_pos + used$tiers
@@ -324,13 +493,28 @@ do_emit_pillars <- function(x, tier_widths, cb, title = NULL, first_pillar = NUL
       }
       x_pos <- x_pos + used$width
     }
+  }
+  list(x_pos = x_pos, tier_pos = tier_pos)
+}
 
-    if (top_level) {
-      cb$on_top_level_pillar()
-    }
+emit_extra_cols <- function(extra, x, title, cb) {
+  if (length(extra) == 0) {
+    return()
   }
 
-  list(tiers = tier_pos - 1L, width = x_pos)
+  if (is.numeric(extra)) {
+    if (length(extra) == 1) {
+      extra <- paste0("[", extra, "]")
+    } else {
+      extra <- paste0("[", min(extra), ":", max(extra), "]")
+    }
+    x_extra <- set_names(list(x[1, ]), extra)
+  } else {
+    extra <- tick_if_needed(extra)
+    x_extra <- tick_names_if_needed(x)
+  }
+
+  cb$on_extra_cols(x_extra, title, extra)
 }
 
 # Reference: https://www.w3.org/International/questions/qa-bidi-unicode-controls
@@ -342,16 +526,7 @@ lro <- function(x) {
   paste0("\u202d", x, "\u202c")
 }
 
-# hbar is cli::symbol$double_line
-vbar <- function() {
-  if (l10n_info()$`UTF-8`) {
-    "\u2551"
-  } else {
-    "|"
-  }
-}
-
-format_colonnade_tier_2 <- function(x, vsep = NULL, bidi = FALSE) {
+format_colonnade_tier_2 <- function(x, bidi = FALSE) {
   if (length(x) == 0) {
     return(character())
   }
@@ -360,33 +535,20 @@ format_colonnade_tier_2 <- function(x, vsep = NULL, bidi = FALSE) {
     x <- map(x, fsi)
   }
 
-  if (is.null(vsep)) {
-    out <- exec(paste, !!!x)
-  } else {
-    stopifnot(length(x) == length(vsep))
-    args <- t(as.matrix(data.frame(I(x), I(vsep), stringsAsFactors = FALSE)))
-    dim(args) <- NULL
-
-    out <- exec(paste0, !!!args)
-  }
+  out <- exec(paste, !!!x)
 
   if (bidi) {
     out <- lro(out)
   }
+
   out
 }
 
-new_colonnade_body <- function(x, extra_cols, split_after = NULL) {
+new_colonnade_body <- function(x, extra_cols, abbrev_cols) {
   "!!!!!DEBUG new_colonnade_body()"
-
-  if (!is.null(split_after)) {
-    width <- get_extent(c(x[[split_after]][[1]], x[[split_after + 1]][[1]]))
-    hbar <- style_subtle(strrep(cli::symbol$double_line, max(width)))
-    x <- c(x[seq_len(split_after)], hbar, x[seq2(split_after + 1, length(x))])
-  }
 
   body <- as_glue(as.character(unlist(x)))
   extra_cols <- as.list(extra_cols)
 
-  list(body = body, extra_cols = extra_cols)
+  list(body = body, extra_cols = extra_cols, abbrev_cols = abbrev_cols)
 }

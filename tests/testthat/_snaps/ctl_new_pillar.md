@@ -4,11 +4,11 @@
       ctl_new_pillar(new_tbl(), 1:3, width = 20, title = "a")
     Output
       <pillar>
-                         a
-                     <int>
-                         1
-                         2
-                         3
+          a
+      <int>
+          1
+          2
+          3
 
 # ctl_new_pillar_list()
 
@@ -17,12 +17,16 @@
     Output
       [[1]]
       <pillar>
-                         a
-                     <int>
-                         1
-                         2
-                         3
+          a
+      <int>
+          1
+          2
+          3
       
+      attr(,"remaining_width")
+      [1] 14
+      attr(,"simple")
+      [1] TRUE
     Code
       ctl_new_pillar_list(new_tbl(), trees[1:3, ], width = 20, title = "a")
     Output
@@ -44,6 +48,10 @@
       
       attr(,"extra")
       [1] "Volume"
+      attr(,"remaining_width")
+      [1] 4
+      attr(,"simple")
+      [1] FALSE
     Code
       ctl_new_pillar_list(new_tbl(), as.matrix(trees[1:3, ]), width = 20, title = "a")
     Output
@@ -57,6 +65,10 @@
       
       attr(,"extra")
       [1] 2 3
+      attr(,"remaining_width")
+      [1] 8
+      attr(,"simple")
+      [1] FALSE
     Code
       ctl_new_pillar_list(new_tbl(), matrix(1:6, ncol = 2), width = 20, title = "a")
     Output
@@ -78,6 +90,10 @@
       
       attr(,"extra")
       integer(0)
+      attr(,"remaining_width")
+      [1] 8
+      attr(,"simple")
+      [1] FALSE
     Code
       ctl_new_pillar_list(new_tbl(), matrix(1:6, ncol = 3), width = 10, title = "a")
     Output
@@ -90,6 +106,10 @@
       
       attr(,"extra")
       [1] 2 3
+      attr(,"remaining_width")
+      [1] 4
+      attr(,"simple")
+      [1] FALSE
 
 # ctl_new_pillar_list() for tables
 
@@ -98,11 +118,15 @@
     Output
       [[1]]
       <pillar>
-                         a
-           <table[,2,2,2]>
-                     0 ...
-                     0 ...
-                    35 ...
-                     0 ...
+                    a
+      <table[,2,2,2]>
+                0 ...
+                0 ...
+               35 ...
+                0 ...
       
+      attr(,"remaining_width")
+      [1] 13
+      attr(,"simple")
+      [1] TRUE
 
