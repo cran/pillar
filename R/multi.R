@@ -1,6 +1,8 @@
 #' Format multiple vectors in a tabular display
 #'
 #' @description
+#' `r lifecycle::badge("soft-deprecated")`
+#'
 #' The vectors are formatted to fit horizontally into a user-supplied number of
 #' characters per row.
 #'
@@ -14,7 +16,7 @@
 #' @param has_row_id Include a column indicating row IDs? Pass `"*"` to mark
 #'   the row ID column with a star.
 #' @param width Default width of the entire output, optional.
-#' @inheritParams ellipsis::dots_empty
+#' @inheritParams rlang::args_dots_empty
 #' @keywords internal
 #' @export
 colonnade <- function(x, has_row_id = TRUE, width = NULL, ...) {
@@ -106,6 +108,9 @@ new_empty_col_sentinel <- function(type) {
 }
 
 #' Squeeze a colonnade to a fixed width
+#'
+#' @description
+#' `r lifecycle::badge("soft-deprecated")`
 #'
 #' The `squeeze()` function usually doesn't need to be called manually.
 #' It returns an object suitable for printing and formatting at a fixed width
@@ -223,12 +228,15 @@ knit_print_squeezed_colonnade_tier <- function(x) {
 
 #' Retrieve information about columns that didn't fit the available width
 #'
+#' @description
+#' `r lifecycle::badge("soft-deprecated")`
+#'
 #' Formatting a [colonnade] object may lead to some columns being omitted
 #' due to width restrictions. This method returns a character vector that
 #' describes each of the omitted columns.
 #'
 #' @param x The result of [squeeze()] on a [colonnade] object
-#' @inheritParams ellipsis::dots_used
+#' @inheritParams rlang::args_dots_used
 #' @keywords internal
 #' @export
 extra_cols <- function(x, ...) {

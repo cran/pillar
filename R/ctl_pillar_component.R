@@ -1,21 +1,26 @@
 #' Components of a pillar
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' `new_pillar_component()` constructs an object of class `"pillar_component"`.
+#' It is used by custom [ctl_new_pillar()] methods to create pillars with
+#' nonstandard components.
 #'
+#' @details
 #' Objects of class `"pillar"` are internally a named lists of their components.
-#' The default components are `title` (may be missing), `type`, and `data`.
-#' Each component is a `"pillar_component"`.
+#' The default components for pillars created by [pillar()] are:
+#' `title` (may be missing), `type`, and `data`.
+#' Each component is a `"pillar_component"` object.
 #'
-#' This class captures contents that can be fitted in a rectangle.
-#' Each component consists of one or multiple cells that
-#' are aligned horizontally (with one space in between) when printed.
-#' Each cell has a maximum (i.e., desired) width and may have a minimum width
-#' if the contents are compressible.
-#' The component object stores the width of the cells as an attribute.
+#' This class captures contents that can be fitted in a simple column.
+#' Compound columns are represented by multiple pillar objects, each with their
+#' own components.
 #'
-#' @inheritParams ellipsis::dots_empty
-#' @param x A bare list (for `new_pillar_component()`), or an object
-#'   with attributes `"width"` and `"min_width"` attributes (for `pillar_component()`).
+#' @inheritParams rlang::args_dots_empty
+#' @param x A bare list of length one (for `new_pillar_component()`),
+#'   or an object with `"width"` and `"min_width"` attributes
+#'   (for `pillar_component()`).
 #' @param width,min_width Width and minimum width for the new component.
 #'   If `min_width` is `NULL`, it is assumed to match `width`.
 #' @export
@@ -29,6 +34,7 @@ new_pillar_component <- function(x, ..., width, min_width = NULL) {
 
   check_dots_empty()
   stopifnot(rlang::is_bare_list(x))
+  stopifnot(length(x) == 1)
   stopifnot(is_integerish(width), length(width) == 1L)
   if (!is.null(min_width)) {
     stopifnot(is_integerish(min_width), length(min_width) == 1L)
@@ -36,8 +42,8 @@ new_pillar_component <- function(x, ..., width, min_width = NULL) {
 
   structure(
     x,
-    width = width,
-    min_width = min_width,
+    width = as.integer(width),
+    min_width = as.integer(min_width %||% width),
     class = "pillar_component"
   )
 }
@@ -54,26 +60,21 @@ pillar_component <- function(x) {
   new_pillar_component(list(x), width = get_width(x), min_width = get_min_width(x))
 }
 
-pillar_get_widths <- function(x) {
-  as.integer(exec(max, !!!map(x, get_width)))
+pillar_get_width <- function(x) {
+  as.integer(max(map_int(x, get_width)))
 }
 
-pillar_get_min_widths <- function(x) {
-  as.integer(exec(max, !!!map(x, get_min_width)))
+pillar_get_min_width <- function(x) {
+  as.integer(max(map_int(x, get_min_width)))
 }
 
-pillar_format_parts_2 <- function(x, width, is_focus = FALSE) {
-  widths <- pillar_get_widths(x)
-  formatted <- map(x, function(.x) format(.x[[1L]], width = min(width, get_width(.x))))
-
-  # FIXME: Support missing type component
-  flat_focus_pos <- integer()
-  if (is_focus) {
-    type_idx <- which(names(x) == "type")
-    if (length(type_idx) > 0) {
-      formatted[[type_idx]] <- crayon_underline(formatted[[type_idx]])
-    }
-  }
+pillar_format_parts_2 <- function(x, width, is_focus = FALSE, footnote_idx = 1L) {
+  formatted <- map(x, function(.x) format(
+    .x[[1L]],
+    width = min(width, get_width(.x)),
+    is_focus = is_focus,
+    footnote_idx = footnote_idx
+  ))
 
   align <- attr(formatted[["data"]], "align", exact = TRUE) %||% "left"
 

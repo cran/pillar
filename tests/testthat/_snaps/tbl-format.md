@@ -17,17 +17,26 @@
       [12] "\033[90m 9\033[39m  11.1     80   22.6"                                                                             
       [13] "\033[90m10\033[39m  11.2     75   19.9"                                                                             
       [14] "\033[90m# ... with 21 more rows\033[39m"                                                                            
+      [15] "\033[90m# i Use `print(n = ...)` to see more rows\033[39m"                                                          
     Code
       options(cli.num_colors = 1)
       format(as_tbl(trees))
     Output
-       [1] "# A data frame: 31 x 3"  "   Girth Height Volume" 
-       [3] "   <dbl>  <dbl>  <dbl>"  " 1   8.3     70   10.3" 
-       [5] " 2   8.6     65   10.3"  " 3   8.8     63   10.2" 
-       [7] " 4  10.5     72   16.4"  " 5  10.7     81   18.8" 
-       [9] " 6  10.8     83   19.7"  " 7  11       66   15.6" 
-      [11] " 8  11       75   18.2"  " 9  11.1     80   22.6" 
-      [13] "10  11.2     75   19.9"  "# ... with 21 more rows"
+       [1] "# A data frame: 31 x 3"                   
+       [2] "   Girth Height Volume"                   
+       [3] "   <dbl>  <dbl>  <dbl>"                   
+       [4] " 1   8.3     70   10.3"                   
+       [5] " 2   8.6     65   10.3"                   
+       [6] " 3   8.8     63   10.2"                   
+       [7] " 4  10.5     72   16.4"                   
+       [8] " 5  10.7     81   18.8"                   
+       [9] " 6  10.8     83   19.7"                   
+      [10] " 7  11       66   15.6"                   
+      [11] " 8  11       75   18.2"                   
+      [12] " 9  11.1     80   22.6"                   
+      [13] "10  11.2     75   19.9"                   
+      [14] "# ... with 21 more rows"                  
+      [15] "# i Use `print(n = ...)` to see more rows"
 
 # print() output
 
@@ -48,6 +57,7 @@
        9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
       10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
       # ... with 22 more rows
+      # i Use `print(n = ...)` to see more rows
     Code
       print(as_tbl(mtcars), n = 8, width = 30)
     Output
@@ -68,6 +78,7 @@
       #   qsec <dbl>, vs <dbl>,
       #   am <dbl>, gear <dbl>,
       #   carb <dbl>
+      # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
     Code
       print(as_tbl(mtcars), n = 30)
     Output
@@ -105,6 +116,7 @@
       29  15.8     8 351     264  4.22  3.17  14.5     0     1     5     4
       30  19.7     6 145     175  3.62  2.77  15.5     0     1     5     6
       # ... with 2 more rows
+      # i Use `print(n = ...)` to see more rows
     Code
       print(as_tbl(mtcars), n = 100)
     Output
@@ -144,27 +156,6 @@
       31  15       8 301     335  3.54  3.57  14.6     0     1     5     8
       32  21.4     4 121     109  4.11  2.78  18.6     1     1     4     2
     Code
-      print(as_tbl(mtcars), width = 40, n_extra = 1)
-    Warning <lifecycle_warning_deprecated>
-      The `n_extra` argument of `print()` is deprecated as of pillar 1.6.2.
-      Please use the `max_extra_cols` argument instead.
-    Output
-      # A data frame: 32 x 11
-           mpg   cyl  disp    hp  drat    wt
-       * <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-       1  21       6  160    110  3.9   2.62
-       2  21       6  160    110  3.9   2.88
-       3  22.8     4  108     93  3.85  2.32
-       4  21.4     6  258    110  3.08  3.22
-       5  18.7     8  360    175  3.15  3.44
-       6  18.1     6  225    105  2.76  3.46
-       7  14.3     8  360    245  3.21  3.57
-       8  24.4     4  147.    62  3.69  3.19
-       9  22.8     4  141.    95  3.92  3.15
-      10  19.2     6  168.   123  3.92  3.44
-      # ... with 22 more rows, and 5 more
-      #   variable: qsec <dbl>, ...
-    Code
       print(as_tbl(mtcars), width = 40, max_extra_cols = 1)
     Output
       # A data frame: 32 x 11
@@ -181,7 +172,8 @@
        9  22.8     4  141.    95  3.92  3.15
       10  19.2     6  168.   123  3.92  3.44
       # ... with 22 more rows, and 5 more
-      #   variable: qsec <dbl>, ...
+      #   variables: qsec <dbl>, ...
+      # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
     Code
       print(as_tbl(mtcars), width = 30, max_footer_lines = 3)
     Output
@@ -201,6 +193,7 @@
       # ... with 22 more rows, and
       #   7 more variables:
       #   drat <dbl>, wt <dbl>, ...
+      # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
     Code
       rlang::with_options(tibble.print_min = 5, as_tbl(mtcars))
     Output
@@ -218,6 +211,7 @@
        9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
       10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
       # ... with 22 more rows
+      # i Use `print(n = ...)` to see more rows
     Code
       rlang::with_options(tibble.print_max = 50, as_tbl(mtcars))
     Output
@@ -235,6 +229,7 @@
        9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
       10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
       # ... with 22 more rows
+      # i Use `print(n = ...)` to see more rows
     Code
       rlang::with_options(tibble.width = 30, as_tbl(mtcars))
     Output
@@ -252,4 +247,54 @@
        9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
       10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
       # ... with 22 more rows
+      # i Use `print(n = ...)` to see more rows
+
+---
+
+    Code
+      print(as_tbl(mtcars), width = 40, n_extra = 1)
+    Condition
+      Warning:
+      The `n_extra` argument of `print()` is deprecated as of pillar 1.6.2.
+      Please use the `max_extra_cols` argument instead.
+    Output
+      # A data frame: 32 x 11
+           mpg   cyl  disp    hp  drat    wt
+       * <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+       1  21       6  160    110  3.9   2.62
+       2  21       6  160    110  3.9   2.88
+       3  22.8     4  108     93  3.85  2.32
+       4  21.4     6  258    110  3.08  3.22
+       5  18.7     8  360    175  3.15  3.44
+       6  18.1     6  225    105  2.76  3.46
+       7  14.3     8  360    245  3.21  3.57
+       8  24.4     4  147.    62  3.69  3.19
+       9  22.8     4  141.    95  3.92  3.15
+      10  19.2     6  168.   123  3.92  3.44
+      # ... with 22 more rows, and 5 more
+      #   variables: qsec <dbl>, ...
+      # i Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+    Code
+      print(tbl_format_setup(new_tbl(trees, pillar_focus = "Volume"), width = 30))
+    Output
+      <pillar_tbl_format_setup>
+      <tbl_format_header(setup)>
+      # A data frame:  31 x 3
+      # Focus columns: Volume
+      <tbl_format_body(setup)>
+         Girth Height Volume
+         <dbl>  <dbl>  <dbl>
+       1   8.3     70   10.3
+       2   8.6     65   10.3
+       3   8.8     63   10.2
+       4  10.5     72   16.4
+       5  10.7     81   18.8
+       6  10.8     83   19.7
+       7  11       66   15.6
+       8  11       75   18.2
+       9  11.1     80   22.6
+      10  11.2     75   19.9
+      <tbl_format_footer(setup)>
+      # ... with 21 more rows
+      # i Use `print(n = ...)` to see more rows
 

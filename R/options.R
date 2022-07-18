@@ -104,14 +104,14 @@ pillar_options <- list2(
     sigfig
   }),
   #' - `min_title_chars`: The minimum number of characters for the column
-  #'     title, default: `15`.  Column titles may be truncated up to that width to
+  #'     title, default: `3`.  Column titles may be truncated up to that width to
   #'     save horizontal space. Set to `Inf` to turn off truncation of column
   #'     titles.
   min_title_chars = make_option_impl(
-    getOption("pillar.min_title_chars", default = 15L)
+    getOption("pillar.min_title_chars", default = 5L)
   ),
   #' - `min_chars`: The minimum number of characters wide to
-  #'     display character columns, default: `3`.  Character columns may be
+  #'     display character columns, default: `5`.  Character columns may be
   #'     truncated up to that width to save horizontal space. Set to `Inf` to
   #'     turn off truncation of character columns.
   min_chars = make_option_impl(option_name = "pillar.min_chars", {
@@ -136,6 +136,12 @@ pillar_options <- list2(
   #'     and that the column headings correspond to the correct columns.
   bidi = make_option_impl(
     getOption("pillar.bidi", default = FALSE)
+  ),
+  #' - `superdigit_sep`: The string inserted between superscript digits
+  #'   and column names in the footnote. Defaults to a `"\u200b"`, a zero-width
+  #'   space, on UTF-8 platforms, and to `": "` on non-UTF-8 platforms.
+  superdigit_sep = make_option_impl(
+    getOption("pillar.superdigit_sep", default = superdigit_sep_default())
   ),
 )
 

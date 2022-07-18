@@ -1,7 +1,6 @@
 # nocov start - zzz.R
 
 #' @import rlang
-#' @import ellipsis
 #' @import lifecycle
 #' @importFrom glue as_glue
 #' @importFrom vctrs data_frame
@@ -34,7 +33,7 @@
 #' @importFrom vctrs vec_restore
 #' @importFrom vctrs vec_size
 #' @importFrom vctrs vec_slice
-#' @importFrom crayon black
+#' @importFrom cli symbol
 NULL
 
 # nolint start

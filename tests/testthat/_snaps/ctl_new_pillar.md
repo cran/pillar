@@ -28,6 +28,23 @@
       attr(,"simple")
       [1] TRUE
     Code
+      ctl_new_pillar_list(new_tbl(), trees[1:3, ], width = 8, title = "a")
+    Output
+      [[1]]
+      <pillar>
+      a$Girth
+        <dbl>
+          8.3
+          8.6
+          8.8
+      
+      attr(,"extra")
+      [1] "Height" "Volume"
+      attr(,"remaining_width")
+      [1] 0
+      attr(,"simple")
+      [1] FALSE
+    Code
       ctl_new_pillar_list(new_tbl(), trees[1:3, ], width = 20, title = "a")
     Output
       [[1]]
@@ -53,7 +70,7 @@
       attr(,"simple")
       [1] FALSE
     Code
-      ctl_new_pillar_list(new_tbl(), as.matrix(trees[1:3, ]), width = 20, title = "a")
+      ctl_new_pillar_list(new_tbl(), as.matrix(trees[1:3, ]), width = 8, title = "a")
     Output
       [[1]]
       <pillar>
@@ -66,7 +83,49 @@
       attr(,"extra")
       [1] 2 3
       attr(,"remaining_width")
-      [1] 8
+      [1] 0
+      attr(,"simple")
+      [1] FALSE
+    Code
+      ctl_new_pillar_list(new_tbl(), as.matrix(trees[1:3, ]), width = 20, title = "a")
+    Output
+      [[1]]
+      <pillar>
+      a[,"Girth"]
+            <dbl>
+              8.3
+              8.6
+              8.8
+      
+      [[2]]
+      <pillar>
+      [,"Height"]
+            <dbl>
+               70
+               65
+               63
+      
+      attr(,"extra")
+      [1] 3
+      attr(,"remaining_width")
+      [1] 4
+      attr(,"simple")
+      [1] FALSE
+    Code
+      ctl_new_pillar_list(new_tbl(), matrix(1:6, ncol = 2), width = 8, title = "a")
+    Output
+      [[1]]
+      <pillar>
+      a[,1]
+      <int>
+          1
+          2
+          3
+      
+      attr(,"extra")
+      [1] 2
+      attr(,"remaining_width")
+      [1] 2
       attr(,"simple")
       [1] FALSE
     Code

@@ -41,29 +41,24 @@ tbl_format_footer.pillar_tbl_format_setup <- function(x, ...) {
 tbl_format_footer.tbl <- function(x, setup, ...) {
   footer <- format_footer(x, setup)
   footer_comment <- wrap_footer(footer, setup)
-  style_subtle(footer_comment)
+  footer_advice <- format_footer_advice(x, setup)
+  footer_advice_comment <- wrap_footer(footer_advice, setup, lines = 1, ellipsis = FALSE)
+  style_subtle(c(footer_comment, footer_advice_comment))
 }
 
 format_footer <- function(x, setup) {
   extra_rows <- format_footer_extra_rows(x, setup)
+  abbrev_cols <- format_footer_abbrev_cols(x, setup)
   extra_cols <- format_footer_extra_cols(x, setup)
 
-  footer <- compact(list(extra_rows, extra_cols))
+  footer <- compact(list(extra_rows, extra_cols, abbrev_cols))
   if (length(footer) == 0) {
     return(character())
   }
 
-  if (length(footer) > 1) {
-    footer_len <- length(footer)
-    idx_all_but_last <- seq.int(footer_len - 1)
-    footer[idx_all_but_last] <- map(footer[idx_all_but_last], function(x) {
-      x[[length(x)]] <- paste0(x[[length(x)]], ",")
-      x
-    })
-    footer <- c(footer[idx_all_but_last], "and", footer[footer_len])
-  }
+  footer_enum <- enum_collapse(footer)
 
-  extra <- unlist(footer, recursive = FALSE)
+  extra <- unlist(footer_enum, recursive = FALSE)
 
   c("with", extra)
 }
@@ -83,6 +78,29 @@ format_footer_extra_rows <- function(x, setup) {
   }
 }
 
+format_footer_abbrev_cols <- function(x, setup) {
+  abbrev_cols <- setup$abbrev_cols
+  abbrev_cols_total <- length(abbrev_cols)
+  if (abbrev_cols_total == 0) {
+    return(NULL)
+  }
+
+  abbrev_cols <- paste0(
+    map_chr(seq_along(abbrev_cols), superdigit),
+    pillar_options$superdigit_sep(),
+    abbrev_cols
+  )
+
+  idx_all_but_last <- seq_len(abbrev_cols_total - 1)
+  abbrev_cols[idx_all_but_last] <- paste0(abbrev_cols[idx_all_but_last], ",")
+
+  c(
+    "abbreviated", "variable",
+    pluralise("name(s)", abbrev_cols),
+    abbrev_cols
+  )
+}
+
 format_footer_extra_cols <- function(x, setup) {
   extra_cols <- setup$extra_cols
   if (length(extra_cols) == 0) {
@@ -95,7 +113,7 @@ format_footer_extra_cols <- function(x, setup) {
   c(
     big_mark(extra_cols_total),
     if (!identical(setup$rows_total, 0L) && nrow(setup$df) > 0) "more",
-    pluralise("variable(s):", extra_cols),
+    pluralise_n("variable(s):", extra_cols_total),
     vars
   )
 }
@@ -104,14 +122,36 @@ format_extra_vars <- function(extra_cols, extra_cols_total) {
   out <- imap(extra_cols, format_abbrev)
 
   if (extra_cols_total > length(extra_cols)) {
-    out <- c(out, cli::symbol$ellipsis)
+    out <- c(out, symbol$ellipsis)
   }
 
   out[-length(out)] <- paste0(out[-length(out)], ",")
   out
 }
 
-wrap_footer <- function(footer, setup) {
+format_footer_advice <- function(x, setup) {
+  if (length(setup$extra_cols) > 0) {
+    cols <- "`colnames()` to see all variable names"
+  } else {
+    cols <- NULL
+  }
+
+  if (is.na(setup$rows_missing) || setup$rows_missing > 0) {
+    rows <- "`print(n = ...)` to see more rows"
+  } else {
+    rows <- NULL
+  }
+
+  advice <- enum_collapse(c(rows, cols))
+
+  if (length(advice) == 0) {
+    return()
+  }
+
+  paste0(symbol$info, " Use ", paste(advice, collapse = " "))
+}
+
+wrap_footer <- function(footer, setup, lines = setup$max_footer_lines, ellipsis = TRUE) {
   if (length(footer) == 0) {
     return(character())
   }
@@ -120,8 +160,7 @@ wrap_footer <- function(footer, setup) {
   max_extent <- setup$width - 1L
 
   tier_widths <- get_footer_tier_widths(
-    footer, max_extent,
-    setup$max_footer_lines
+    footer, max_extent, lines, ellipsis
   )
 
   # show optuput even if too wide
@@ -131,16 +170,29 @@ wrap_footer <- function(footer, setup) {
   # truncate output that doesn't fit
   truncated <- anyNA(wrap$tier)
   split <- split(footer[wrap$id], wrap$tier)
-  if (truncated && length(split) > 0) {
-    split[[length(split)]] <- c(split[[length(split)]], cli::symbol$ellipsis)
+  if (ellipsis && truncated && length(split) > 0) {
+    split[[length(split)]] <- c(split[[length(split)]], symbol$ellipsis)
   }
-  split <- imap(split, function(x, y) c("#", if (y == 1) cli::symbol$ellipsis else " ", x))
+  split <- imap(split, function(.x, .y) {
+    if (!ellipsis) {
+      header <- NULL
+    } else if (.y == 1) {
+      header <- symbol$ellipsis
+    } else {
+      header <- " "
+    }
+    c("#", header, .x)
+  })
 
   map_chr(split, paste, collapse = " ")
 }
 
-get_footer_tier_widths <- function(footer, max_extent, n_tiers) {
-  extra_width <- get_extent(cli::symbol$ellipsis) + 1L # space, ellipsis
+get_footer_tier_widths <- function(footer, max_extent, n_tiers, ellipsis = TRUE) {
+  if (ellipsis) {
+    extra_width <- get_extent(symbol$ellipsis) + 1L # space, ellipsis
+  } else {
+    extra_width <- FALSE
+  }
 
   n_tiers <- min(length(footer), n_tiers)
 
@@ -157,7 +209,7 @@ get_footer_tier_widths <- function(footer, max_extent, n_tiers) {
 
 pre_dots <- function(x) {
   if (length(x) > 0) {
-    paste0(cli::symbol$ellipsis, " ", x)
+    paste0(symbol$ellipsis, " ", x)
   } else {
     character()
   }
@@ -172,4 +224,18 @@ split_lines <- function(x) {
   }
 
   unlist(strsplit(x, "\n", fixed = TRUE))
+}
+
+enum_collapse <- function(x) {
+  if (length(x) > 1) {
+    x_len <- length(x)
+    idx_all_but_last <- seq2(1, x_len - 1)
+    x[idx_all_but_last] <- map(x[idx_all_but_last], function(x) {
+      x[[length(x)]] <- paste0(x[[length(x)]], ",")
+      x
+    })
+    x <- c(x[idx_all_but_last], "and", x[x_len])
+  }
+
+  x
 }

@@ -57,11 +57,11 @@ Default: \code{TRUE}.
 highlighted, default: \code{3}. Set the \code{subtle} option to \code{FALSE} to
 turn off highlighting of significant digits.
 \item \code{min_title_chars}: The minimum number of characters for the column
-title, default: \code{15}.  Column titles may be truncated up to that width to
+title, default: \code{3}.  Column titles may be truncated up to that width to
 save horizontal space. Set to \code{Inf} to turn off truncation of column
 titles.
 \item \code{min_chars}: The minimum number of characters wide to
-display character columns, default: \code{3}.  Character columns may be
+display character columns, default: \code{5}.  Character columns may be
 truncated up to that width to save horizontal space. Set to \code{Inf} to
 turn off truncation of character columns.
 \item \code{max_dec_width}: The maximum allowed width for decimal notation,
@@ -72,6 +72,9 @@ and "first strong isolate"
 \href{https://www.w3.org/International/questions/qa-bidi-unicode-controls}{Unicode controls}
 are inserted to ensure that text appears in its intended direction
 and that the column headings correspond to the correct columns.
+\item \code{superdigit_sep}: The string inserted between superscript digits
+and column names in the footnote. Defaults to a \code{"\\u200b"}, a zero-width
+space, on UTF-8 platforms, and to \code{": "} on non-UTF-8 platforms.
 }
 }
 

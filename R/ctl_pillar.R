@@ -109,21 +109,6 @@ pillar_from_shaft <- function(title, type, data, width) {
   )
 }
 
-rowidformat2 <- function(data, names, has_star) {
-  empty_component <- pillar_component(set_width("", 0))
-  out <- map(set_names(names), function(.x) empty_component)
-
-  if ("type" %in% names) {
-    out$type <- pillar_component(rif_type(has_star))
-  }
-
-  if ("data" %in% names) {
-    out$data <- pillar_component(data)
-  }
-
-  new_pillar(out, width = get_width(data))
-}
-
 #' Construct a custom pillar object
 #'
 #' @description
@@ -138,7 +123,7 @@ rowidformat2 <- function(data, names, has_star) {
 #' If your tibble subclass needs more or different components in its pillars,
 #' override or extend [ctl_new_pillar()] and perhaps [ctl_new_pillar_list()].
 #'
-#' @inheritParams ellipsis::dots_empty
+#' @inheritParams rlang::args_dots_empty
 #' @inheritParams pillar
 #' @param components A named list of components constructed with [pillar_component()].
 #' @param class Name of subclass.
@@ -187,8 +172,7 @@ format.pillar <- function(x, width = NULL, ...) {
   }
 
   if (is.null(width)) {
-    widths <- pillar_get_widths(x)
-    width <- sum(widths) + length(widths) - 1L
+    width <- pillar_get_width(x)
   }
 
   as_glue(pillar_format_parts_2(x, width)$aligned)

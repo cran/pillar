@@ -5,7 +5,7 @@ style_title <- style_bold
 #' Call [format()] on the result to render column titles.
 #'
 #' @param x A character vector of column titles.
-#' @inheritParams ellipsis::dots_empty
+#' @inheritParams rlang::args_dots_empty
 #' @export
 #' @examples
 #' format(new_pillar_title(names(trees)))
@@ -28,7 +28,7 @@ new_pillar_title <- function(x, ...) {
   ret <- structure(list(x), class = "pillar_title")
 
   ret <- set_width(ret, width)
-  ret <- set_min_width(ret, get_min_title_width(width))
+  ret <- set_min_width(ret, min(width, get_min_title_width(width)))
   ret
 }
 
@@ -47,11 +47,11 @@ get_min_title_width <- function(width) {
   if (width <= title_chars) {
     return(width)
   }
-  title_chars + get_extent(get_ellipsis())
+  title_chars + 2L
 }
 
 #' @export
-format.pillar_title <- function(x, width = NULL, ...) {
+format.pillar_title <- function(x, width = NULL, ..., footnote_idx = 0L) {
   title <- x[[1]]
   if (is.null(title)) {
     return(character())
@@ -61,6 +61,10 @@ format.pillar_title <- function(x, width = NULL, ...) {
     width <- get_width(x)
   }
 
-  title <- format_title(title, width)
+  footnote <- (footnote_idx > 0L)
+  title <- format_title(title, width, footnote)
+  if (footnote) {
+    title <- gsub("\u02df$", superdigit(footnote_idx), title)
+  }
   style_title(title)
 }

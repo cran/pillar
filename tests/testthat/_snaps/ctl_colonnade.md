@@ -23,6 +23,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
 
 # tests from tibble
 
@@ -67,6 +70,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
     Code
       ctl_colonnade(trees[1:5, ], width = 20)
     Output
@@ -86,6 +92,35 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
+      
+    Code
+      ctl_colonnade(trees[1:5, ], width = 10)
+    Output
+      $body
+        Girth
+        <dbl>
+      1   8.3
+      2   8.6
+      3   8.8
+      4  10.5
+      5  10.7
+      
+      $extra_cols
+      $extra_cols$Height
+      [1] 70 65 63 72 81
+      
+      $extra_cols$Volume
+      [1] 10.3 10.3 10.2 16.4 18.8
+      
+      
+      $abbrev_cols
+      character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       ctl_colonnade(trees[1:3, ], width = 10)
@@ -107,6 +142,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       ctl_colonnade(df_all, width = 30)
@@ -165,6 +203,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
     Code
       ctl_colonnade(df_all, width = 300)
     Output
@@ -185,6 +226,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       options(width = 70)
@@ -208,6 +252,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
     Code
       options(width = 60)
       ctl_colonnade(df_all, width = 300)
@@ -230,6 +277,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
     Code
       options(width = 50)
       ctl_colonnade(df_all, width = 300)
@@ -251,6 +301,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       options(width = 40)
@@ -278,6 +331,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       options(width = 30)
@@ -310,6 +366,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       options(width = 20)
@@ -373,6 +432,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
     Code
       list_with_ctl <- list(c("\n", "\""), factor(c("\n", "\n")))
       names(list_with_ctl) <- c("\n", "\r")
@@ -389,6 +451,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       ctl_colonnade(list(a = c("", " ", "a ", " a")), width = 30)
@@ -407,6 +472,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
     Code
       ctl_colonnade(list(`mean(x)` = 5, `var(x)` = 3), width = 30)
     Output
@@ -420,6 +488,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
 
 # NA names
@@ -442,6 +513,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
 
 # sep argument
 
@@ -460,6 +534,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
     Code
       # dummy
@@ -482,6 +559,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
 
 # tibble columns (nested)
 
@@ -500,6 +580,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
 
 # tibble columns (empty)
@@ -520,6 +603,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
 
 # matrix columns (unnamed)
 
@@ -538,6 +624,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
 
 # matrix columns (named)
@@ -558,6 +647,9 @@
       $abbrev_cols
       character(0)
       
+      $abbrev_col_idxs
+      numeric(0)
+      
 
 # matrix columns (empty)
 
@@ -576,6 +668,9 @@
       
       $abbrev_cols
       character(0)
+      
+      $abbrev_col_idxs
+      numeric(0)
       
 
 # filling unused width (#331)

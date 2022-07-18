@@ -11,6 +11,7 @@ test_that("tests from tibble", {
   expect_snapshot({
     ctl_colonnade(mtcars[1:8, ], has_row_id = "*", width = 30)
     ctl_colonnade(trees[1:5, ], width = 20)
+    ctl_colonnade(trees[1:5, ], width = 10)
     ctl_colonnade(trees[1:3, ], width = 10)
     ctl_colonnade(df_all, width = 30)
     ctl_colonnade(df_all, width = 300)
@@ -173,7 +174,7 @@ test_that("filling unused width (#331)", {
 
   pillar_shaft.foo <- function(x, ...) {
     full <- format(x)
-    trunc <- format(paste0(substr(x, 1, 7), cli::symbol$continue))
+    trunc <- format(paste0(substr(x, 1, 7), symbol$continue))
     pillar::new_pillar_shaft(
       list(full = full, trunc = trunc),
       width = pillar::get_max_extent(full),

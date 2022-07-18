@@ -43,6 +43,8 @@ str_add_ellipsis <- function(x, str_width, width, shorten) {
       abbr <- substr2_ctl(x, 1, width - 1, type = "width")
       paste0(abbr, get_ellipsis())
     },
+    untick = str_add_ellipsis_untick(x, str_width, width),
+    untick_footnote = str_add_ellipsis_untick(x, str_width, width, footnote = TRUE),
     front = {
       abbr <- substr2_ctl(x, str_width - width + 2, str_width, type = "width")
       paste0(get_ellipsis(), abbr)
@@ -58,6 +60,34 @@ str_add_ellipsis <- function(x, str_width, width, shorten) {
       abbreviate(x, minlength = width, strict = TRUE)
     }
   )
+}
+
+str_add_ellipsis_untick <- function(x, str_width, width, footnote = FALSE) {
+  stopifnot(length(x) == 1)
+  stopifnot(str_width > width)
+
+  if (footnote) {
+    width <- width - 1L
+  }
+
+  # Removing ticks due to https://github.com/tidyverse/tibble/issues/838
+  x_unticked <- gsub("`", "", x, fixed = TRUE)
+  if (x_unticked != x) {
+    x <- x_unticked
+    str_width <- get_extent(x)
+  }
+
+  # Add ellipsis even if short enough after removal of ticks
+  abbr <- substr2_ctl(x, 1, width - 1L, type = "width")
+  abbr <- paste0(abbr, get_ellipsis())
+
+  if (footnote) {
+    # Placeholder, regular title can't end with this string,
+    # we can use this to detect a footnote
+    abbr <- paste0(abbr, "\u02df")
+  }
+
+  abbr
 }
 
 paste_with_space_if_needed <- function(x, y) {
@@ -90,7 +120,7 @@ bind_rows <- function(x) {
 }
 
 get_ellipsis <- function() {
-  cli::symbol$continue
+  symbol$continue
 }
 
 is_latex_output <- function() {
@@ -145,4 +175,26 @@ vec_lag <- function(x, default = vec_slice(x, NA_integer_)) {
     default <- vec_slice(x, NA_integer_)
   }
   vec_c(default, vec_slice(x, -n))
+}
+
+super <- c(
+  "\u00b9", "\u00b2", "\u00b3", "\u2074",
+  "\u2075", "\u2076", "\u2077", "\u2078", "\u2079",
+  "\u02df"
+)
+
+superdigit <- function(x) {
+  if (cli::is_utf8_output()) {
+    super[[min(x, 10)]]
+  } else {
+    if (x >= 10) "*" else as.character(x)
+  }
+}
+
+superdigit_sep_default <- function() {
+  if (cli::is_utf8_output()) {
+    "\u200b"
+  } else {
+    ": "
+  }
 }
