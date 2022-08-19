@@ -1,11 +1,12 @@
 Package: pillar
 Title: Coloured Formatting for Columns
-Version: 1.8.0
+Version: 1.8.1
 Authors@R: 
     c(person(given = "Kirill",
              family = "M\u00fcller",
              role = c("aut", "cre"),
-             email = "krlmlr+r@mailbox.org"),
+             email = "kirill@cynkra.com",
+             comment = c(ORCID = "0000-0002-1416-3412")),
       person(given = "Hadley",
              family = "Wickham",
              role = "aut"),
@@ -25,7 +26,7 @@ Suggests: bit64, debugme, DiagrammeR, dplyr, formattable, ggplot2,
         tibble, units (>= 0.7.2), vdiffr, withr
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Config/testthat/start-first: format_multi_fuzz, format_multi_fuzz_2,
@@ -34,10 +35,10 @@ Config/autostyle/scope: line_breaks
 Config/autostyle/strict: true
 Config/gha/extra-packages: DiagrammeR=?ignore-before-r=3.5.0
 NeedsCompilation: no
-Packaged: 2022-07-09 04:42:15 UTC; kirill
-Author: Kirill Müller [aut, cre],
+Packaged: 2022-08-18 16:02:46 UTC; kirill
+Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   RStudio [cph]
-Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
+Maintainer: Kirill Müller <kirill@cynkra.com>
 Repository: CRAN
-Date/Publication: 2022-07-18 08:50:06 UTC
+Date/Publication: 2022-08-19 08:40:07 UTC

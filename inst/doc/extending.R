@@ -145,7 +145,7 @@ ctl_new_pillar_list.hide_df <- function(controller, x, width, ..., title = NULL)
   if (!is.data.frame(x)) {
     return(NextMethod())
   }
-  
+
   if (width < 8) {
     return(NULL)
   }
