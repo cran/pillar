@@ -35,7 +35,7 @@
 new_pillar_shaft <- function(x, ..., width = NULL, min_width = width,
                              type_sum = NULL, class = NULL, subclass = NULL) {
   if (!is.null(subclass)) {
-    deprecate_soft("1.4.0", "pillar::new_pillar_shaft(subclass = )", "new_pillar_shaft(class = )")
+    deprecate_stop("1.4.0", "pillar::new_pillar_shaft(subclass = )", "new_pillar_shaft(class = )")
     class <- subclass
   }
 
@@ -313,6 +313,11 @@ pillar_shaft.character <- function(x, ..., min_width = NULL) {
     min_chars <- get_pillar_option_min_chars()
   }
 
+  if (isS4(out)) {
+    # Remove S4 bit:
+    out <- unclass(out)[seq_along(out)]
+  }
+
   pillar_shaft(as_glue(out), ..., min_width = min_chars, na_indent = na_indent, shorten = pillar_attr$shorten)
 }
 
@@ -354,7 +359,7 @@ pillar_shaft.list <- function(x, ...) {
     width = width,
     align = "left",
     min_width = min_width,
-    short_formatted = short_formatted
+    short_formatted = style_list(short_formatted)
   )
 }
 
