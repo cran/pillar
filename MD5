@@ -1,7 +1,7 @@
-9e76e2200465636317322a69c624f6a9 *DESCRIPTION
+7b1116e81eeb7a666f8fc7822167a8c0 *DESCRIPTION
 5f53097c35751d37fc3336e103bf8d82 *LICENSE
 8b18ffa34123a85b7cf80db969249de4 *NAMESPACE
-f4e8b6ac0fb9c0049e309760b6b4cf87 *NEWS.md
+57fdc82b7605bd75ebf3586b24148b64 *NEWS.md
 d54f49d4fe2e2408657ac71a58cb6965 *R/aaa-options.R
 67cc64affadeea6b7559c3cb417ae24d *R/capital.R
 53af72c5c578096353866664e18a1468 *R/char.R
@@ -49,12 +49,12 @@ dfef2f1127104bb7f5734f2be51c17bf *R/testthat.R
 df675831e2b85228c8245c3b6c0d9e63 *R/tick.R
 69f41f9f24c9dbc7aa7aa066984ba151 *R/title.R
 9da066aa916a67e58b906e3dc60e44bd *R/type-sum.R
-be462a9065651613f0589f4484b54dc9 *R/type.R
+434b788a1a9857eb3eec6a5e24e5c009 *R/type.R
 da86fc3c1d45137e2e2159454fb7568e *R/utils.R
 5e513a3e8638f3fc0bc63ccad5c55234 *R/vctr.R
 04133c2b23f6f5c1b7047f7d9c09d4e1 *R/vctrs.R
 547729e1db786ac4ab0c0c3024f6e2c1 *R/width.R
-88abb3206b1129a9fc403bdadd5b45eb *R/zzz.R
+b048af8aec26eac6f54971cd4f86eef6 *R/zzz.R
 09f768b94efab803f5c852eccd949915 *README.md
 0441fd1450f128dd2c8361d68d38bb8e *build/vignette.rds
 be493f814da30b8ce0c8ffbae8f6c333 *inst/WORDLIST
@@ -71,7 +71,7 @@ ffeca7d7b87e946eb9147eebeffb2134 *inst/doc/extending.html
 a66e0514b0bac0311fe9d13d96ff73a4 *inst/doc/numbers.html
 34c510702e9f44619aced231b43f198d *inst/doc/printing.R
 a3d2092360ad13bfd0544a323a4b2d59 *inst/doc/printing.Rmd
-43dffb93b57355b6966746a8bb6cd3ad *inst/doc/printing.html
+f8aab763f3673e2f8ddd812b922feb06 *inst/doc/printing.html
 20c5bf72cf15cf8e555938efd95397be *man/align.Rd
 85d4db5d0999b945b7b7d30b44aeedd7 *man/char.Rd
 e793a80a804630cd47df0330fb2f6b77 *man/colonnade.Rd
@@ -91,7 +91,7 @@ c3978703d8f40f2679795335715e98f4 *man/figures/lifecycle-experimental.svg
 1c1fe7a759b86dc6dbcbe7797ab8246c *man/figures/lifecycle-superseded.svg
 38adc4e117fb3013872825ab107219a0 *man/format_glimpse.Rd
 3e667918f7449de0602d73c3eb5eb651 *man/format_tbl.Rd
-25e621da7281f712926347a773900af0 *man/format_type_sum.Rd
+7abd0010928fa17eb8d58e8faace3cea *man/format_type_sum.Rd
 f3e0e3fbbde2bead7bab8ba965fc868f *man/get_extent.Rd
 e35449066142f125fcd618abec53c00c *man/glimpse.Rd
 04e7e35a9ca05c75385c41ad9776ff7d *man/new_ornament.Rd

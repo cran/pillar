@@ -1,6 +1,6 @@
 Package: pillar
 Title: Coloured Formatting for Columns
-Version: 1.10.0
+Version: 1.10.1
 Authors@R: 
     c(person(given = "Kirill",
              family = "M\u00fcller",
@@ -36,10 +36,10 @@ Config/autostyle/strict: true
 Config/gha/extra-packages: DiagrammeR=?ignore-before-r=3.5.0
 Config/Needs/website: tidyverse/tidytemplate
 NeedsCompilation: no
-Packaged: 2024-12-17 22:02:41 UTC; kirill
+Packaged: 2025-01-07 10:10:11 UTC; kirill
 Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   RStudio [cph]
 Maintainer: Kirill Müller <kirill@cynkra.com>
 Repository: CRAN
-Date/Publication: 2024-12-17 23:10:02 UTC
+Date/Publication: 2025-01-07 11:10:06 UTC
