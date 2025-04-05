@@ -1,5 +1,26 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# pillar 1.10.2
+
+## Bug fixes
+
+- `print()` and `format()` pass on `...` to `tbl_format_setup()` again, as documented (@thothal, #726).
+
+- Show up to 20 rows by default for lazy tables again, regression introduced in pillar 1.10.0 (#727).
+
+## Features
+
+- Add color to commas for `tibble::glimpse()` (@TSchiefer, #658, #734).
+
+## Chore
+
+- Compatibility with upcoming ggplot2 (@teunbrand, tidyverse/ggplot2#6361, #729).
+
+## Documentation
+
+- Fix introductory example in `vignette("extending")` (#732, #736).
+
+
 # pillar 1.10.1
 
 ## Documentation

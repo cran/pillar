@@ -67,6 +67,8 @@ test_that("get_n_print()", {
   expect_equal(get_n_print(NULL, 5), 5)
   expect_equal(get_n_print(NULL, 6), 6)
   expect_equal(get_n_print(NULL, 7), 3)
+
+  expect_equal(get_n_print(NULL, NA), structure(3, max = 6))
 })
 
 test_that("get_width_print()", {
@@ -76,4 +78,29 @@ test_that("get_width_print()", {
   expect_equal(get_width_print(40), 40)
   expect_equal(get_width_print(80), 80)
   expect_equal(get_width_print(140), 140)
+})
+
+test_that("format() is silent if not all arguments in `...` are used", {
+  tbl <- new_tbl(trees)
+  expect_error(format(tbl, unknown_arg = TRUE), NA)
+})
+
+test_that("print() and format() can pass down arguments in `...`", {
+  local_methods(
+    tbl_format_setup.my_tibble = function(x, ..., known_arg = TRUE) {
+      setup <- NextMethod()
+      if (known_arg) {
+        setup$tbl_sum <- c(setup$tbl_sum, "Attribute" = "Set")
+      }
+      setup
+    }
+  )
+
+  tbl <- new_tbl(trees, class = "my_tibble")
+
+  expect_snapshot({
+    format(tbl, known_arg = TRUE)
+    print(tbl, known_arg = TRUE)
+    print(tbl, known_arg = FALSE)
+  })
 })
