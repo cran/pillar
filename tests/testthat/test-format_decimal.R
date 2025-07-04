@@ -22,14 +22,34 @@ test_that("compute_rhs_digits() works", {
   )
 })
 
+test_that("compute_exp_display() returns NA if not relevant", {
+  x <- c(NA, NaN, Inf, 0, 1, 100, 0.001)
+  expect_equal(compute_exp_display(x, 6), c(NA, NA, NA, NA, 0, 2, -3))
+})
+
 test_that("compute_exp() returns NA if not relevant", {
   x <- c(NA, NaN, Inf, 0, 1, 100, 0.001)
   expect_equal(compute_exp(x, 6), c(NA, NA, NA, NA, 0, 2, -3))
 })
 
-test_that("compute_exp() respectis significant digits", {
+test_that("compute_exp_display() respects significant digits (#174)", {
   x <- c(0.9, 0.99, 0.999, 0.99949, 0.9995, 0.99951, 0.9999, 0.99999, 0.999999)
-  expect_equal(compute_exp(x, 3), c(-1, -1, -1, -1, 0, 0, 0, 0, 0))
+  expect_equal(compute_exp_display(x, 3), c(-1, -1, -1, -1, 0, 0, 0, 0, 0))
+})
+
+test_that("compute_exp() respects significant digits for rhs computation (#1648)", {
+  x <- c(0.9, 0.99, 0.999, 0.99949, 0.9995, 0.99951, 0.9999, 0.99999, 0.999999)
+  expect_equal(compute_exp(x, 3), c(-1, -1, -1, -1, -1, -1, -1, -1, -1))
+})
+
+test_that("scientific notation handles rounding edge cases correctly", {
+  # 9.995 with 4 sigfig -> 9.99, should be displayed as 9.999e0, not 10.0e0
+  f <- split_decimal(9.995, sigfig = 4, sci_mod = 1)
+  expect_equal(f$exp, 0)  # Should be 0 for 9.99e0 display
+
+  # 9.9995 with 4 sigfig -> 10.0, should be displayed as 1.00e1
+  f2 <- split_decimal(9.9995, sigfig = 4, sci_mod = 1)
+  expect_equal(f2$exp, 1)  # Should be 1 for 1.00e1 display
 })
 
 test_that("special values appear in LHS", {
@@ -137,4 +157,29 @@ test_that("width computation", {
   expect_decimal_width(c(1.234, 1.2345))
   expect_decimal_width(c(1.2, -Inf))
   expect_decimal_width(c(1, Inf))
+})
+
+test_that("9.99...95 (tidyverse/tibble#1648)", {
+  # Declaring the constants inside expect_snapshot() perturbs the input
+  x <- c(
+    0x1.3fd70a3d70a3dp+3,
+    0x1.3ffff583a53b8p+3,
+    0x1.3ffffef39085ep+3,
+    0x1.3ffffffff920cp+3,
+    0x1.3ffffffffffe3p+3
+  )
+
+  expect_snapshot({
+    format(num(x[1], sigfig = 3))
+    format(num(x[2], sigfig = 6))
+    format(num(x[3], sigfig = 7))
+    format(num(x[4], sigfig = 11))
+    format(num(x[5], sigfig = 14, notation = "dec"))
+  })
+})
+
+test_that("sigfig > 15 fails", {
+  expect_snapshot(error = TRUE, {
+    format(num(0, sigfig = 16))
+  })
 })

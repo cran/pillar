@@ -1,7 +1,7 @@
-bc7d327f67d74cf469a18fd2f8bb7c56 *DESCRIPTION
+341cd8e9f3abae9ef27acbe24ab281e7 *DESCRIPTION
 5f53097c35751d37fc3336e103bf8d82 *LICENSE
 8b18ffa34123a85b7cf80db969249de4 *NAMESPACE
-8a24922a8eaba0c844cf70e7e1ab0c49 *NEWS.md
+1516c2f139fdcb819833203ba3b83d74 *NEWS.md
 d54f49d4fe2e2408657ac71a58cb6965 *R/aaa-options.R
 67cc64affadeea6b7559c3cb417ae24d *R/capital.R
 53af72c5c578096353866664e18a1468 *R/char.R
@@ -32,10 +32,10 @@ e97eb8f0a3010b18e8b12435dd07a9dc *R/rowid-data.R
 e20d7e8161395787451780f335c1fa0d *R/rowid-title.R
 7bbc0f3db686b237612c7ec554b6f22a *R/rowid-type.R
 e86712f7617b7bd9557f30bc50d49133 *R/scientific.R
-b642d5cb89282e67929c6a652026382e *R/shaft-.R
+331691693c6641812b3fbc2ba98dc48a *R/shaft-.R
 e61d85eb8a9533face08faafa25dbe8c *R/shaft-simple.R
 b102e0f7834f89c173f5a5d7c37ef4db *R/show_source.R
-f29b32e35e64228b3711475f1e7ab4ac *R/sigfig.R
+fd82476b9f9274d4f5d0c6fd106c5815 *R/sigfig.R
 26cae60ce5f08b6e8b6e041fb2a35e6e *R/strrep.R
 0875b979d7d80ee43db8696007952490 *R/styles.R
 088b493cd62e6fa0eef797571a42eefd *R/tbl-format-body.R
@@ -50,13 +50,13 @@ df675831e2b85228c8245c3b6c0d9e63 *R/tick.R
 69f41f9f24c9dbc7aa7aa066984ba151 *R/title.R
 9da066aa916a67e58b906e3dc60e44bd *R/type-sum.R
 434b788a1a9857eb3eec6a5e24e5c009 *R/type.R
-da86fc3c1d45137e2e2159454fb7568e *R/utils.R
+353303b4839f908a7922e5b61553f4d2 *R/utils.R
 5e513a3e8638f3fc0bc63ccad5c55234 *R/vctr.R
 04133c2b23f6f5c1b7047f7d9c09d4e1 *R/vctrs.R
 547729e1db786ac4ab0c0c3024f6e2c1 *R/width.R
 b048af8aec26eac6f54971cd4f86eef6 *R/zzz.R
 09f768b94efab803f5c852eccd949915 *README.md
-0441fd1450f128dd2c8361d68d38bb8e *build/vignette.rds
+33a4ae8c8a0bc3eaa59efb72a6b61d37 *build/vignette.rds
 be493f814da30b8ce0c8ffbae8f6c333 *inst/WORDLIST
 fb245a56b91b44d54050a4aa56530e46 *inst/doc/debugme.R
 b48909c0117f9f2bb91f534e30d2a81f *inst/doc/debugme.Rmd
@@ -71,7 +71,7 @@ bf59bf74c5930c845e6b79b1508987c8 *inst/doc/digits.Rmd
 a66e0514b0bac0311fe9d13d96ff73a4 *inst/doc/numbers.html
 b9a07bf35d7e078a7518a9d8e0ef06a5 *inst/doc/printing.R
 a3d2092360ad13bfd0544a323a4b2d59 *inst/doc/printing.Rmd
-57d588b2ec84a5cfae23ef552b3e1b38 *inst/doc/printing.html
+23c13803db35f2ac03320fbda491d942 *inst/doc/printing.html
 20c5bf72cf15cf8e555938efd95397be *man/align.Rd
 85d4db5d0999b945b7b7d30b44aeedd7 *man/char.Rd
 e793a80a804630cd47df0330fb2f6b77 *man/colonnade.Rd
@@ -126,7 +126,7 @@ c9507281d672aaed3e0ca85a5b38fb9e *tests/testthat/_snaps/ctl_compound.md
 c30e9f791a29db3876b9f78eb1459719 *tests/testthat/_snaps/format_asis.md
 d1e790b5b83aca1bc065532cb451717f *tests/testthat/_snaps/format_character.md
 29253f485d2cf0bf8fe040a03257108d *tests/testthat/_snaps/format_date.md
-71e29885d3d18be2666303765ad9ad4e *tests/testthat/_snaps/format_decimal.md
+0a047f4ea8c388b2fdab1619e70f4406 *tests/testthat/_snaps/format_decimal.md
 eb1c80bb2ed6f149d9a55750e8452a29 *tests/testthat/_snaps/format_factor.md
 d8e60e6f25ea07604c2d424cc32bb5a0 *tests/testthat/_snaps/format_integer.md
 bd14860c6c8580de4812672f29a21910 *tests/testthat/_snaps/format_integer64.md
@@ -180,7 +180,7 @@ d8f233b54cc85bd495f1acb15839b89f *tests/testthat/test-distribute.R
 98223ca71c88d5f31c44a5fa7171e870 *tests/testthat/test-format_asis.R
 25526dd2901188db7d39cd1e06d9bc7c *tests/testthat/test-format_character.R
 11c2a0ccfab4e9d934fefc865830ba25 *tests/testthat/test-format_date.R
-2d0bf937a8aa61f62b41edcb89cc6658 *tests/testthat/test-format_decimal.R
+58aa6e277933070b94b1eb44d8c379e5 *tests/testthat/test-format_decimal.R
 daafd0d770f876e8e15442394707b2d6 *tests/testthat/test-format_factor.R
 b6e1a3b92af770c382ba52ec3c882dba *tests/testthat/test-format_integer.R
 e87dfa0492d420eb8d8ff8abc2b4de86 *tests/testthat/test-format_integer64.R
@@ -194,7 +194,7 @@ e9b5fb791b0e279200af0eee5d979369 *tests/testthat/test-format_rowid.R
 db3795b7c8e36ab28463ec8bf0ea25cd *tests/testthat/test-format_survival.R
 e2966d1a2c17b8802408ad18a734d72a *tests/testthat/test-format_time.R
 838346366341acc8021bbd33c56e68be *tests/testthat/test-format_unspecified.R
-6f4ed42da025d1b646d3b5e6c36ee11a *tests/testthat/test-ggplot2.R
+8fede922f132d097bb9341adda12d7da *tests/testthat/test-ggplot2.R
 60aa1feecb3b34bb150250cd4a8391fe *tests/testthat/test-glimpse.R
 1d42b0ee4aff23cdd088e155c89c0f97 *tests/testthat/test-multi.R
 91fd3bd699e114999cbfc9ef1e8a301e *tests/testthat/test-new-pillar-title.R

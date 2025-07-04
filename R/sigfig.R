@@ -44,7 +44,8 @@ split_decimal <- function(x, sigfig, digits = NULL, sci_mod = NULL, si = FALSE,
   "!!!!!!DEBUG `v(mnt)`"
 
   if (!is.null(sci_mod)) {
-    exp <- fix_exp(num, compute_exp(mnt, sigfig, digits), fixed_exponent, sci_mod, si)
+    exp <- compute_exp_display(mnt, sigfig, digits)
+    exp <- fix_exp(num, exp, fixed_exponent, sci_mod, si)
     "!!!!!!DEBUG `v(exp)`"
     unit <- attr(exp, "unit")
 
@@ -68,7 +69,9 @@ split_decimal <- function(x, sigfig, digits = NULL, sci_mod = NULL, si = FALSE,
   if (is.null(digits)) {
     "!!!!!!DEBUG `v(sigfig)`"
     min_sigfig <- compute_min_sigfig(mnt)
+    "!!!!!!DEBUG `v(min_sigfig)`"
     round_mnt <- safe_signif(mnt, pmax(sigfig, min_sigfig, na.rm = TRUE))
+    "!!!!!!DEBUG `v(round_mnt)`"
     rhs_digits <- compute_rhs_digits(mnt, sigfig)
   } else if (digits >= 0) {
     "!!!!!!DEBUG `v(digits)`"
@@ -210,6 +213,7 @@ compute_rhs_digits <- function(x, sigfig, offset = rep_along(x, 0)) {
 
   if (!is.integer(x) && !all(x == trunc(x), na.rm = TRUE)) {
     has_rhs <- (exp <= sigfig)
+    "!!!!!!DEBUG `v(has_rhs)`"
     rhs_digits[has_rhs] <- sigfig - 1 - exp[has_rhs]
 
     to_check <- rhs_digits > 0
@@ -223,6 +227,7 @@ compute_rhs_digits <- function(x, sigfig, offset = rep_along(x, 0)) {
       "!!!!!!DEBUG `v(val - round(val))"
 
       resid_zero <- within_tolerance(val, round(val))
+      "!!!!!!DEBUG `v(resid_zero)`"
       resid_zero[is.na(resid_zero)] <- FALSE
 
       rhs_digits[which_to_check][resid_zero] <-
@@ -231,6 +236,9 @@ compute_rhs_digits <- function(x, sigfig, offset = rep_along(x, 0)) {
       to_check[which_to_check][!resid_zero] <- FALSE
       to_check[rhs_digits == 0] <- FALSE
     }
+
+    "!!!!!!DEBUG `v(to_check)"
+    "!!!!!!DEBUG `v(rhs_digits)"
   }
 
   "!!!!!!DEBUG `v(rhs_digits)"
@@ -259,7 +267,8 @@ compute_extra_sigfig <- function(x) {
 
 LOG_10 <- log(10)
 
-compute_exp <- function(x, sigfig, digits) {
+compute_exp_display <- function(x, sigfig, digits = NULL) {
+  "!!!!!!DEBUG compute_exp_display(`v(x)`, `v(sigfig)`, `v(digits)`)"
   if (is.null(sigfig)) {
     sigfig <- abs(digits)
   }
@@ -272,10 +281,21 @@ compute_exp <- function(x, sigfig, digits) {
   # Division before log is the same as subtraction after log.
   # Using log1p for numerical stability.
   offset <- log1p(-5 * 10^(-sigfig - 1)) / LOG_10
+  "!!!!!!DEBUG `v(offset)`"
 
   ret <- rep_along(x, NA_integer_)
   nonzero <- which(x != 0 & is.finite(x))
   ret[nonzero] <- as.integer(floor(log10(x[nonzero]) - offset))
+  "!!!!!!DEBUG `v(ret)`"
+  ret
+}
+
+compute_exp <- function(x, sigfig) {
+  "!!!!!!DEBUG compute_exp(`v(x)`, `v(sigfig)`)"
+  ret <- rep_along(x, NA_integer_)
+  nonzero <- which(x != 0 & is.finite(x))
+  ret[nonzero] <- as.integer(floor(log10(x[nonzero])))
+  "!!!!!!DEBUG `v(ret)`"
   ret
 }
 
@@ -350,13 +370,18 @@ format_rhs <- function(s) {
   neg <- s$neg
   dec <- s$dec
   lhs_zero <- s$lhs_zero
-  rhs_num <- s$rhs_num
   rhs_digits <- s$rhs_digits
 
   # Digits on RHS of .
-  rhs_num <- sprintf("%.0f", abs(round(s$rhs * 10^(s$rhs_digits))))
+
+  # s$rhs * 10^(rhs_digits) should be almost an integer
+  rhs_val <- s$rhs * 10^rhs_digits
+
+  rhs_num <- sprintf("%.0f", abs(round(rhs_val)))
   rhs_num[rhs_num == "0"] <- ""
 
+  # Special treatment for leading zeros for some formatting,
+  # hand-rolling
   n_zeros <- pmax(0, rhs_digits - get_extent(rhs_num))
   rhs_zero <- strrep("0", n_zeros)
 
@@ -374,7 +399,7 @@ format_rhs <- function(s) {
 
   rhs_col <- ifelse(dec,
     paste0(
-      style_num(rhs_underlined_zero, neg, !lhs_zero),
+      style_num(rhs_underlined_zero, neg, significant = !lhs_zero),
       style_num(rhs_underlined_num, neg)
     ),
     ""
